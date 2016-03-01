@@ -2,7 +2,7 @@
 
 int main(void)
 {
-    tx_t tx;
+    tx_header_t tx_header;
     
     return 0;
 }
