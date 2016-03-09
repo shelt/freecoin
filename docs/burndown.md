@@ -7,7 +7,7 @@
 
 ## Burndown
 * ~~Tx structs~~
-* Tx (de)serializing
+* ~~Tx (de)serializing~~
 * Block structs
 * Block (de)serializing
 * IO
