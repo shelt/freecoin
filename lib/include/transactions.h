@@ -81,7 +81,6 @@ void tx_output_deserialize(uint8_t *src, tx_output_t *dst);
 #define POS_TX_HEADER 0
 #define POS_TX_BODY sizeof(tx_header_t)
 
-
 typedef struct
 {
     tx_header_t tx_header;
