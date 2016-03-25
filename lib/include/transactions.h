@@ -1,11 +1,13 @@
 #ifndef TRANSACTIONS_H
 #define TRANSACTIONS_H
-
+#include "util.h"
 #include <stdint.h>
 
 /**********
  * HEADER *
  **********/
+
+#define SIZE_TX_HASH 32
 
 // Positions
 #define POS_TX_HEADER_VERSION 0
@@ -87,6 +89,12 @@ typedef struct
 uint32_t tx_compute_size(tx_t *tx)
 {
     return sizeof(tx_header_t) + (tx->tx_header.in_count)*sizeof(tx_input_t) + (tx->tx_header.out_count)*sizeof(tx_output_t);
+}
+uint32_t tx_raw_compute_size(uint8_t *tx)
+{
+    return sizeof(tx_input_t) * btous(&tx[POS_TX_HEADER_IN_COUNT])   +
+           sizeof(tx_output_t) * btous(&tx[POS_TX_HEADER_OUT_COUNT]) +
+           sizeof(tx_header_t);
 }
 
 void tx_serialize(tx_t *src, uint8_t *dst);

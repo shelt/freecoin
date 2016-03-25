@@ -1,5 +1,4 @@
 #include "transactions.h"
-#include "util.h"
 #include "blocks.h"
 #include "crypto.h"
 #include <string.h>
