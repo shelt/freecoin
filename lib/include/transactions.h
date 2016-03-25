@@ -3,10 +3,6 @@
 
 #include <stdint.h>
 
-// Constants
-// 1024*1024; used during buffer allocation
-#define MAX_TX_SIZE 1048576
-
 /**********
  * HEADER *
  **********/

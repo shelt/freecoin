@@ -1,5 +1,17 @@
 #include "util.h"
 
+void fatal(const char *string, ...)
+{
+    va_list args;
+    va_start(args, string);
+
+    printf("Fatal: ");
+    vfprintf (stdout, string, args);
+    printf("\n");
+    
+    exit(1);
+};
+
 void ustob(uint16_t src, uint8_t *dst)
 {
     dst[0] = src >> 8 & 0xff;

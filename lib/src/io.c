@@ -2,6 +2,7 @@
 #include "transactions.h"
 #include "shared.h"
 #include <stdio.h>
+#include <string.h>
 #include <dirent.h>
 
 #define SIZE_BLOCK_HASH 32
@@ -9,8 +10,8 @@
 #define DIR_BLOCKS CONFIG_DIR_DATA ## "/blocks/"
 #define DIR_TXINDEX CONFIG_DIR_DATA ## "/txindex/"
 
-#define SIZE_TXINDEX_PATH SIZE_TX_HASH + sizeof(DIR_TXINDEX) + 1
-#define SIZE_BLOCKS_PATH SIZE_BLOCK_HASH + sizeof(DIR_BLOCKS) + 1
+#define SIZE_TXINDEX_PATH SIZE_TX_HASH*2 + sizeof(DIR_TXINDEX)*2 + 1
+#define SIZE_BLOCKS_PATH SIZE_BLOCK_HASH*2 + sizeof(DIR_BLOCKS)*2 + 1
 
 void intern_get_txindex_fname(uint8_t *hash, uint8_t *dst)
 {
@@ -26,7 +27,10 @@ void intern_get_block_fname(uint8_t *block_hash, uint8_t *dst)
     dst[SIZE_BLOCKS_PATH - 1] = "\n";
 }
 
-intern_fread_at(); //TODO
+int intern_find_hash(uint8_t *hash, char *path)
+{
+    //TODO
+}
 
 /****************
  * TRANSACTIONS *
@@ -39,7 +43,7 @@ void io_load_nth_tx_raw(uint8_t *block_hash, uint32_t n, tx_t *dst)
     
     // Check for sanity
     if (n >= btoui(&block_buffer[POS_BLOCK_TX_COUNT]))
-        die("Attempted to use io_load_nth_tx_raw() with n >= tx_count");
+        fatal("Attempted to use io_load_nth_tx_raw() with n >= tx_count");
     
     uint64_t ins_size,outs_size;
     int cursor = sizeof(block_header_t);
@@ -58,7 +62,7 @@ void io_load_tx_raw(uint8_t *dst)
     uint8_t block_hash = malloc(SIZE_BLOCK_HASH);
     int pos = io_block_at_height(tx_hash, block_hash);
     if (pos < 0)
-        die("Attempted to load tx without first checking existence with io_block_of_tx()");
+        fatal("Attempted to load tx without first checking existence with io_block_of_tx()");
 
     io_load_nth_tx_raw(block_hash, pos, dst);
     free(block_hash);
@@ -69,6 +73,7 @@ void io_save_tx_raw(uint8_t *src);
 
 // Util
 
+
 int io_block_of_tx(uint8_t *src_tx_hash, uint8_t *dst_block_hash)
 {
     DIR *d;
@@ -77,19 +82,20 @@ int io_block_of_tx(uint8_t *src_tx_hash, uint8_t *dst_block_hash)
     d = opendir(DIR_TXINDEX);
     if (d)
     {
+        uint8_t path = malloc(SIZE_TXINDEX_PATH + SIZE_BLOCK_HASH + 1);
         while ((dir = readdir(d)) != NULL)
         {
-            pos = intern_find_hash(dir->d_name);
+            intern_get_txindex_fname(dir->d_name, path);
+            pos = intern_find_hash(src_tx_hash, path);
             if (pos >= 0)
             {
-                memcpy(dst_block_hash, dir->d_name, SIZE_BLOCK_HASH);
+                memcpy(dst_block_hash, dir->d_name, SIZE_BLOCK_HASH); // TODO does this work correctly?
                 break;
             }
-
         }
         closedir(d);
+        free(path);
     }
-    fclose(f);
     return pos;
 }
 
@@ -97,7 +103,7 @@ int io_block_of_tx(uint8_t *src_tx_hash, uint8_t *dst_block_hash)
  * BLOCKS *
  **********/
 
-void io_load_block_raw(uint8_t *hash, uint8_t *dst)
+void io_load_block_raw(uint8_t *block_hash, uint8_t *dst)
 {
     char block_file_name[SIZE_BLOCKS_PATH];
     intern_get_block_fname(block_hash, &block_file_name);
@@ -107,7 +113,7 @@ void io_load_block_raw(uint8_t *hash, uint8_t *dst)
 
     f = fopen(block_file_name, "rb");
     if (!f)
-        die("Attempted to open nonexistent block without first checking existence with io_height_of_block()");
+        fatal("Attempted to open nonexistent block without first checking existence with io_height_of_block()");
     fseek(f, 0, SEEK_END);
     file_len = ftell(f);
     rewind(f);
