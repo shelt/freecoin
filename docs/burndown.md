@@ -8,8 +8,8 @@
 ## Burndown
 * ~~Tx structs~~
 * ~~Tx (de)serializing~~
-* Block structs
-* Block (de)serializing
+* ~~Block structs~~
+* ~~Block (de)serializing~~
 * IO
   * Tx storage
   * Block storage
