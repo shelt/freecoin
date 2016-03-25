@@ -1,8 +1,11 @@
 #ifndef TRANSACTIONS_H
 #define TRANSACTIONS_H
 
-#include <string.h>
-#include "shared.h"
+#include <stdint.h>
+
+// Constants
+// 1024*1024; used during buffer allocation
+#define MAX_TX_SIZE 1048576
 
 /**********
  * HEADER *
@@ -69,6 +72,38 @@ typedef struct
 void tx_output_serialize(tx_output_t *src, uint8_t *dst);
 
 void tx_output_deserialize(uint8_t *src, tx_output_t *dst);
+
+/********
+ * FULL *
+ ********/
+
+// Positions
+#define POS_TX_HEADER 0
+#define POS_TX_BODY sizeof(tx_header_t)
+
+
+typedef struct
+{
+    tx_header_t tx_header;
+    tx_input_t **tx_ins;
+    tx_output_t **tx_outs;
+} tx_t;
+
+uint32_t tx_compute_size(tx_t *tx)
+{
+    return sizeof(tx_header_t) + (tx->tx_header.in_count)*sizeof(tx_input_t) + (tx->tx_header.out_count)*sizeof(tx_output_t);
+}
+
+void tx_serialize(tx_t *src, uint8_t *dst);
+void tx_deserialize(uint8_t *src, tx_t *dst);
+
+
+/*********
+ * OTHER *
+ *********/
+
+void compute_merkle_root(tx_t **txs, uint32_t tx_count, uint8_t *out);
+
 
 #endif /* TRANSACTIONS_H */
 
