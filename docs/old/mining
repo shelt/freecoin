@@ -1,0 +1,37 @@
+MINING
+
+every 3 seconds
+    update time in block
+    check for changed latest_blockhash
+every 60 seconds
+    update mempool with unadded txs
+on block solution found
+    add block to blockchain
+    update latest_blockhash
+    send <inv> to all peers with latest block
+on changed latest_blockhash
+    discard current workblock
+    start new workblock built upon latest block
+
+
+NETWORK
+on block solution recieved in inv
+    add block to blockchain
+    update latest_blockhash
+    discard confirmed txs from mempool
+
+
+You can have client peers or server peers.
+All must be able to:
+- Send to a peer
+- Send to all
+- Recieve from a peer
+
+The miner and the client/server sockets must all
+run parallel.
+The socket threads must be able to access and modify:
+    The workblock tx_count
+    the workblock itself
+
+
+What is the difference between miner and nonminer peers, and how should the code behave differently?

@@ -1,0 +1,18 @@
+# Netbeans
+nbproject/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml/
+.nb-gradle/
+
+bin/
+build/
+*.o
+*.so
+*.dll
+*.exe
+*.stackdump
+*.sw[ponm]
+*.save
+*~

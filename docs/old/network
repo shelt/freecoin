@@ -1,0 +1,27 @@
+
+/////OLD/////
+
+MSG CONTENTS
+* see docs for all blank
+* limit to 8 peers
+* <x> means a message of type x
+* Non-advertised nodes should be forgotten after typically 3 hours
+* use payload maxes in docs and insure such maxes before allocation (1MB for blocks)
+* note: force print statements to flush from buffer by using \n (useful when segfaults are occuring)
+
+
+### MINING ###
+
+Work on a block:
+- Attempt to find a valid block nonce whilst:
+----- Recieve <tx>s from peers
+----- 
+----- 
+----- 
+
+Submit a block:
+
+
+
+Recieving a <getblocks>:
+- If your blockchain is ahead of client's, send <inv> containing up to 500 blocks they are missing.

@@ -1,0 +1,62 @@
+## CURRENT TODO ##
+Determining block validity with respect to chains
+Prune network.c and ensure that:
+- startup() which checks to see if block db is nonexistant. If it is, create it and add the initial block (which is hardcoded).
+- all data assembly is done in build.c in the most DRY way possible
+move all existing function descriptions to header files.
+add nonexistant definitions to header files.
+
+
+## DEFINITIONS ##
+get    : retrieve
+set    : write
+compute: compute and retrieve
+update : compute and write
+
+## PREFIXES ##
+r_      : this function deals with raw memory allocation. often encapsulated by m_ functions.
+m_      : this function allocates memory that is returned in some way, or deallocates memory that was previously allocated by a sister m_ function.
+M_      : this struct is an encapsulation of allocated data with info about it (size).
+v_      : verbose function
+data_   : modifies data buffers or databases. Likely accepts dbs parameter.
+tx_     : modifies a transaction in some way.
+block_  : modifies a block in some way.
+msg_    : accepts raw parameters and sends a message
+msgall_ : accepts raw parameters and calls the equivilent msg_ for all peers
+
+# Constants
+POS_      : refers to the position within a block (POS_BLOCK_*) or tx (POS_TX_*) or other fixed size object (such as a message)
+SIZE_     : refers to the size of some part of a fixed size object (such as a block, tx or message)
+MAX_      : refers to the max of some object
+
+
+having more than 255 txs could create a bug where transactions stored at indexes abobve that are not sent
+
+
+#### NOTES FOR REDO ####
+ALL REDONE FILES ARE CANON UNLESS CHANGED
+NEVER use block_get_x and tx_get_x. USE bytes_to_uint(someblock[BLOCK_POS_X])
+INSTEAD of doing block_add_tx, we do 
+
+#### NOTES FOR STANDARDS ####
+ALWAYS refer to a destination memory area as: dest
+ALWAYS newline parameter lists of 4 or more (see transactions.c for bracket style)
+
+
+### TODO ###
+all instances of cursor should probably use the for loop index instead
+transactions.c is_coinbase_tx
+bignum.c
+blocks.c etarget target
+validation.c
+    // Verify the validity of a given block and all subsequent blocks up to an end block
+    is valid chain
+
+    // Verify the validity of a given block (but not it's previous block)
+    is valid block
+    is_valid_blockhash
+
+
+#### INFO ####
+// passing a point in an array as a ptr looks like &array[x]
+// understand importance of stack vars and pass by value; no memory leaks occur

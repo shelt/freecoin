@@ -1,0 +1,15 @@
+bin/*
+build/*
+lib/*
+*.o
+*.so
+*.dll
+*.exe
+*.stackdump
+*.sw[ponm]
+*.save
+*~
+
+include/db.h
+include/db_cxx.h
+
