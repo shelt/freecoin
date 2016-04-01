@@ -166,9 +166,8 @@ void io_save_block_raw(uint8_t *src)
     int cursor = SIZE_BLOCK_HEADER;
     for (int i=0; i<tx_count; i++)
     {
-        //DEBUG printf("block_header_t: %d\n", tx_count);
-        tx_raw_compute_hash(&src[cursor], hash_buffer);  //segfaulting
-        fwrite(&src[cursor], SIZE_SHA256, 1, f);
+        tx_raw_compute_hash(&src[cursor], hash_buffer);
+        fwrite(hash_buffer, SIZE_SHA256, 1, f);
         
         cursor += tx_raw_compute_size(&src[cursor]);
     }
