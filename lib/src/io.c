@@ -2,6 +2,7 @@
 #include "transactions.h"
 #include "shared.h"
 #include "util.h"
+#include "fs.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,40 +10,17 @@
 
 #define SIZE_BLOCK_HASH 32
 
-#define DIR_BLOCKS CONFIG_DIR_DATA "/blocks/"
-#define DIR_TXINDEX CONFIG_DIR_DATA "/txindex/"
-
-#define SIZE_TXINDEX_PATH SIZE_TX_HASH*2 + sizeof(DIR_TXINDEX)*2 + 1
-#define SIZE_BLOCKS_PATH SIZE_BLOCK_HASH*2 + sizeof(DIR_BLOCKS)*2 + 1
-
-/*
- * The mechanics of this file, specifically how directories
- * are looped through and how filenames are converted to hash bytearrays
- * and vice versa is very hack. This should be rectified ASAP.
- */
-
-void intern_get_txindex_fname(uint8_t *tx_hash, char *dst)
-{
-    strcpy(dst, DIR_TXINDEX);
-    bytes_to_hexstr(&dst[strlen(DIR_TXINDEX)], tx_hash, SIZE_BLOCK_HASH);
-    dst[SIZE_TXINDEX_PATH - 1] = '\0';
-}
-
-void intern_get_block_fname(uint8_t *block_hash, char *dst)
-{
-    strcpy(dst, DIR_BLOCKS);
-    bytes_to_hexstr(&dst[strlen(DIR_BLOCKS)], block_hash, SIZE_BLOCK_HASH);
-    dst[SIZE_BLOCKS_PATH - 1] = '\0';
-}
+#define DIR_BLOCKS "/blocks/"
+#define DIR_TXINDEX "/txindex/"
 
 int intern_find_hash(uint8_t *hash, char *path)
 {
     FILE *f;
-    uint8_t *hash_buffer = malloc(SIZE_TX_HASH);
+    uint8_t *hash_buffer = malloc(SIZE_SHA256);
 
     f = fopen(path, "rb");
     if (!f)
-        fatal("Attempted to open nonexistent file in intern_find_hash()");
+        fatal("Failed to open file in intern_find_hash()");
     
     // Size
     fseek(f, 0, SEEK_END);
@@ -52,8 +30,8 @@ int intern_find_hash(uint8_t *hash, char *path)
     int retval = -1;
     for (int i=0; i<hash_count; i++)
     {
-        fread(hash_buffer, SIZE_TX_HASH, 1, f);
-        if (memcmp(hash, hash_buffer, SIZE_TX_HASH) == 0)
+        fread(hash_buffer, SIZE_SHA256, 1, f);
+        if (memcmp(hash, hash_buffer, SIZE_SHA256) == 0)
         {
             retval = i;
             break;
@@ -75,11 +53,11 @@ void io_load_nth_tx_raw(uint8_t *block_hash, uint32_t n, uint8_t *dst)
     io_load_block_raw(block_hash, block_buffer);
     
     // Check for sanity
-    if (n >= btoui(&block_buffer[POS_BLOCK_TX_COUNT]))
+    if (n >= btoui(&block_buffer[POS_BLOCK_HEADER_TX_COUNT]))
         fatal("Attempted to use io_load_nth_tx_raw() with n >= tx_count");
     
     uint64_t ins_size,outs_size;
-    int cursor = sizeof(block_header_t);
+    int cursor = SIZE_BLOCK_HEADER;
     int tx_cursor = 0;
     while (tx_cursor < n)
         cursor += tx_raw_compute_size(&block_buffer[cursor]);
@@ -100,9 +78,6 @@ void io_load_tx_raw(uint8_t *tx_hash_src, uint8_t *dst)
     free(block_hash);
 }
 
-void io_save_tx(tx_t *src);
-void io_save_tx_raw(uint8_t *src);
-
 // Util
 
 
@@ -114,15 +89,9 @@ int io_block_of_tx(uint8_t *src_tx_hash, uint8_t *dst_block_hash)
     d = opendir(DIR_TXINDEX);
     if (d)
     {
-        char *path = malloc(SIZE_TXINDEX_PATH + SIZE_BLOCK_HASH + 1);
         while ((dir = readdir(d)) != NULL)
         {
-            intern_get_txindex_fname(dir->d_name, path);
-
-            // Hack TODO
-            strcpy(path, DIR_TXINDEX);
-            memcpy(&path[strlen(DIR_TXINDEX)], dir->d_name, SIZE_BLOCK_HASH*2);
-            path[SIZE_TXINDEX_PATH - 1] = '\0';
+            char *path = m_strconcat(7, getenv("HOME"),"/",CONFIG_DIR_FREECOIN,"/",DIR_TXINDEX,"/",dir->d_name);
             
             pos = intern_find_hash(src_tx_hash, path);
             if (pos >= 0)
@@ -130,9 +99,10 @@ int io_block_of_tx(uint8_t *src_tx_hash, uint8_t *dst_block_hash)
                 memcpy(dst_block_hash, dir->d_name, SIZE_BLOCK_HASH); // TODO does this work correctly?
                 break;
             }
+            
+            free(path);
         }
         closedir(d);
-        free(path);
     }
     return pos;
 }
@@ -143,9 +113,10 @@ int io_block_of_tx(uint8_t *src_tx_hash, uint8_t *dst_block_hash)
 
 void io_load_block_raw(uint8_t *block_hash, uint8_t *dst)
 {
-    char block_file_name[SIZE_BLOCKS_PATH];
-    intern_get_block_fname(block_hash, block_file_name);
-
+    char block_hash_ascii[SIZE_BLOCK_HASH*2+1];
+    bytes_to_hexstr(block_hash_ascii, block_hash, SIZE_BLOCK_HASH);
+    char *block_file_name = m_strconcat(7, getenv("HOME"),"/",CONFIG_DIR_FREECOIN,"/",DIR_BLOCKS,"/",block_hash_ascii);
+    
     FILE *f;
     long file_len;
 
@@ -158,11 +129,55 @@ void io_load_block_raw(uint8_t *block_hash, uint8_t *dst)
 
     fread(dst, file_len, 1, f);
     fclose(f);
+    free(block_file_name);
 }
 
-void io_save_block(block_t *src);
-void io_save_block_raw(uint8_t *src);
-
+void io_save_block(block_t *src)
+{
+    fatal("Unimplemented: io_save_block");
+}
+void io_save_block_raw(uint8_t *src)
+{
+    uint8_t *block_hash = malloc(SIZE_BLOCK_HASH);
+    block_raw_compute_hash(src, block_hash);
+    
+    char block_hash_ascii[SIZE_BLOCK_HASH*2+1];
+    bytes_to_hexstr(block_hash_ascii, block_hash, SIZE_BLOCK_HASH);
+    
+    printf("\nAscii hash: %s\n", block_hash_ascii);////debug
+    
+    uint64_t block_size = block_raw_compute_size(src);
+    
+    char *block_file_name = m_strconcat(7, getenv("HOME"),"/",CONFIG_DIR_FREECOIN,"/",DIR_BLOCKS,"/",block_hash_ascii);
+    char *txindex_file_name = m_strconcat(7, getenv("HOME"),"/",CONFIG_DIR_FREECOIN,"/",DIR_TXINDEX,"/",block_hash_ascii);
+    
+    FILE *f;
+    f = fopen(block_file_name, "wb");
+    
+    fwrite(src, block_size, 1, f);
+    
+    fclose(f);
+    
+    // Txindex
+    uint8_t *hash_buffer = malloc(SIZE_SHA256);
+    f = fopen(txindex_file_name, "wb");
+    
+    uint32_t tx_count = btoui(&src[POS_BLOCK_HEADER_TX_COUNT]);
+    int cursor = SIZE_BLOCK_HEADER;
+    for (int i=0; i<tx_count; i++)
+    {
+        //DEBUG printf("block_header_t: %d\n", tx_count);
+        tx_raw_compute_hash(&src[cursor], hash_buffer);  //segfaulting
+        fwrite(&src[cursor], SIZE_SHA256, 1, f);
+        
+        cursor += tx_raw_compute_size(&src[cursor]);
+    }
+    fclose(f);
+    free(hash_buffer);
+    free(block_file_name);
+    free(txindex_file_name);
+    free(block_hash);
+}
 
 // Util
 
