@@ -30,16 +30,16 @@ void tx_header_deserialize(uint8_t *src, tx_header_t *dst)
 void tx_input_serialize(tx_input_t *src, uint8_t *dst)
 {
     ustob(src->out_index, &dst[POS_TX_INPUT_OUT_INDEX]);
-    memcpy(&dst[POS_TX_INPUT_REF_TX], src->ref_tx, sizeof(src->ref_tx));
-    memcpy(&dst[POS_TX_INPUT_PUBKEY], src->pubkey, sizeof(src->pubkey));
-    memcpy(&dst[POS_TX_INPUT_SIG], src->sig, sizeof(src->sig));
+    memcpy(&dst[POS_TX_INPUT_REF_TX], src->ref_tx, SIZE_TX_INPUT_REF_TX);
+    memcpy(&dst[POS_TX_INPUT_PUBKEY], src->pubkey, SIZE_TX_INPUT_PUBKEY);
+    memcpy(&dst[POS_TX_INPUT_SIG], src->sig, SIZE_TX_INPUT_SIG);
 }
 void tx_input_deserialize(uint8_t *src, tx_input_t *dst)
 {
     dst->out_index = btous(&src[POS_TX_INPUT_OUT_INDEX]);
-    memcpy(dst->ref_tx, &src[POS_TX_INPUT_REF_TX], sizeof(dst->ref_tx));
-    memcpy(dst->pubkey, &src[POS_TX_INPUT_PUBKEY], sizeof(dst->pubkey));
-    memcpy(dst->sig, &src[POS_TX_INPUT_SIG], sizeof(dst->sig));
+    memcpy(dst->ref_tx, &src[POS_TX_INPUT_REF_TX], SIZE_TX_INPUT_REF_TX);
+    memcpy(dst->pubkey, &src[POS_TX_INPUT_PUBKEY], SIZE_TX_INPUT_PUBKEY);
+    memcpy(dst->sig, &src[POS_TX_INPUT_SIG], SIZE_TX_INPUT_SIG);
 }
 
 /**********
@@ -48,13 +48,13 @@ void tx_input_deserialize(uint8_t *src, tx_input_t *dst)
 
 void tx_output_serialize(tx_output_t *src, uint8_t *dst)
 {
-    memcpy(&dst[POS_TX_OUTPUT_OUT_ADDR], src->out_addr, sizeof(src->out_addr));
+    memcpy(&dst[POS_TX_OUTPUT_OUT_ADDR], src->out_addr, SIZE_TX_OUTPUT_OUT_ADDR);
     uitob(src->amount, &dst[POS_TX_OUTPUT_AMOUNT]);
 }
 
 void tx_output_deserialize(uint8_t *src, tx_output_t *dst)
 {
-    memcpy(dst->out_addr, &src[POS_TX_OUTPUT_OUT_ADDR], sizeof(dst->out_addr));
+    memcpy(dst->out_addr, &src[POS_TX_OUTPUT_OUT_ADDR], SIZE_TX_OUTPUT_OUT_ADDR);
     dst->amount = btoui(&src[POS_TX_OUTPUT_AMOUNT]);
 }
 
@@ -65,25 +65,82 @@ void tx_output_deserialize(uint8_t *src, tx_output_t *dst)
 
 void tx_serialize(tx_t *src, uint8_t *dst)
 {
-    uint32_t in_count = src->tx_header.in_count;
-    uint32_t out_count = src->tx_header.out_count;
+    uint32_t in_count = src->header.in_count;
+    uint32_t out_count = src->header.out_count;
     
-    tx_header_serialize(&src->tx_header, &dst[POS_TX_HEADER]);
+    tx_header_serialize(&src->header, &dst[POS_TX_HEADER]);
     
     uint32_t counter = POS_TX_BODY;
-    for (int i=0; i<in_count; i++, counter*=sizeof(tx_input_t))
-        memcpy(&dst[counter], src->tx_ins[i], sizeof(tx_input_t));
-    for (int i=0; i<out_count; i++, counter*=sizeof(tx_output_t))
-        memcpy(&dst[counter], src->tx_outs[i], sizeof(tx_output_t));
+    for (int i=0; i<in_count; i++, counter*=SIZE_TX_INPUT)
+        memcpy(&dst[counter], &src->ins[i], SIZE_TX_INPUT);
+    for (int i=0; i<out_count; i++, counter*=SIZE_TX_OUTPUT)
+        memcpy(&dst[counter], &src->outs[i], SIZE_TX_OUTPUT);
 }
 
-
-
-void tx_deserialize(uint8_t *src, tx_t *dst);
+tx_t *m_tx_deserialize(uint8_t *src)
+{
+    tx_t *tx = malloc(sizeof(tx_t));
+    tx_header_deserialize(&src[POS_TX_HEADER], &tx->header);
+    
+    uint16_t in_count = tx->header.in_count;
+    uint16_t out_count = tx->header.out_count;
+    
+    tx->ins = malloc(sizeof(tx_input_t) * in_count);
+    tx->outs = malloc(sizeof(tx_output_t) * out_count);
+    
+    uint32_t cursor = POS_TX_BODY;
+    for (int i=0; i<in_count; i++)
+    {
+        tx_input_deserialize(&src[cursor], &tx->ins[i]);
+        cursor += SIZE_TX_INPUT;
+    }
+    for (int i=0; i<out_count; i++)
+    {
+        tx_output_deserialize(&src[cursor], &tx->outs[i]);
+        cursor += SIZE_TX_OUTPUT;
+    }
+    return tx;
+}
+void m_free_tx(tx_t *tx)
+{
+    free(tx->ins);
+    free(tx->outs);
+    free(tx);
+}
 
 /*********
  * OTHER *
  *********/
+
+
+uint32_t tx_compute_size(tx_t *tx)
+{
+    return SIZE_TX_HEADER +
+            (tx->header.in_count)*SIZE_TX_INPUT +
+            (tx->header.out_count)*SIZE_TX_OUTPUT;
+}
+uint32_t tx_raw_compute_size(uint8_t *tx)
+{
+    return SIZE_TX_INPUT * btous(&tx[POS_TX_HEADER_IN_COUNT])   +
+           SIZE_TX_OUTPUT * btous(&tx[POS_TX_HEADER_OUT_COUNT]) +
+           SIZE_TX_HEADER;
+}
+
+void tx_compute_hash(tx_t *tx, uint8_t *dst)
+{
+    fatal("Unimplemented: tx_compute_hash");
+}
+
+void tx_raw_compute_hash(uint8_t *tx, uint8_t *dst)   
+{
+    crypto_sha256_ctx *ctx = malloc(sizeof(crypto_sha256_ctx));
+    
+    sha256_init(ctx);
+    sha256_update(ctx, tx, tx_raw_compute_size(tx));
+    sha256_final(ctx, dst);
+    
+    free(ctx);
+}
 
 void compute_merkle_root(tx_t **txs, uint32_t tx_count, uint8_t *out)
 {
