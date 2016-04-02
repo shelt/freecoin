@@ -16,14 +16,11 @@
 // 1024*1024; 
 #define MAX_TX_SIZE 1048576
 
-// TODO replace all SIZE_BLOCK_HASH and SIZE_TX_HASH with this
+// TODO replace all SIZE_SHA256 and SIZE_SHA256 with this
 #define SIZE_SHA256 32
 #define SIZE_RSA1024 128
 
 // CONFIG OPTIONS
-// TODO move to config file
-#define CONFIG_DIR_FREECOIN ".freecoin/"
-
 
 
 
