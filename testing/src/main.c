@@ -57,20 +57,6 @@ void test_io()
     
     io_load_block_raw(block_hash,block_raw_loaded);
     
-    // Old debugging
-    //printf("initial struct: %d\n", block_compute_size(&block));
-    //printf("initial raw   : %d\n", block_raw_compute_size(block_raw));
-    //printf("loaded  raw   : %d\n", block_raw_compute_size(block_raw_loaded));
-    
-    
-    
-    // Old debugging
-    //for (int i=0; i<block_size; i++)
-    //    printf("%02x", block_raw[i]);
-    //printf("\n\n\n");
-    //for (int i=0; i<block_size; i++)
-    //    printf("%02x", block_raw_loaded[i]);
-    //printf("\n");
     printf("Load->Save raw memcmp: %d\n", memcmp(block_raw,block_raw_loaded, block_size));
     //todo struct cmp
 }
@@ -85,7 +71,6 @@ void test_util()
     
     printf("hexstr1: %s\n", hexstr);
     printf("hexstr2: %s\n", hexstr2);
-    
     
     uint8_t *buff = malloc(4);
     uitob(34, buff);
@@ -119,6 +104,7 @@ void test_sha256()
 
 int main(void)
 {
+    io_init();
     test_io();
     
     return 0;
