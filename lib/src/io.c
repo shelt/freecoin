@@ -8,12 +8,22 @@
 #include <string.h>
 #include <dirent.h>
 
-#define SIZE_BLOCK_HASH 32
+#define SIZE_SHA256 32
 
-#define DIR_BLOCKS "/blocks/"
-#define DIR_TXINDEX "/txindex/"
+static char *ROOT_FREECOIN;
+static char *FILE_BLOCKCHAIN;
+static char *DIR_BLOCKS;
+static char *DIR_TXINDEX;
 
-int intern_find_hash(uint8_t *hash, char *path)
+void io_init()
+{
+    ROOT_FREECOIN   = m_strconcat(2, getenv("HOME"),"/.freecoin/");
+    FILE_BLOCKCHAIN = m_strconcat(2, ROOT_FREECOIN, "/blockchain");
+    DIR_BLOCKS      = m_strconcat(2, ROOT_FREECOIN, "/blocks/");
+    DIR_TXINDEX     = m_strconcat(2, ROOT_FREECOIN, "/txindex/");
+}
+
+int64_t intern_hash_getindex(uint8_t *hash, char *path)
 {
     FILE *f;
     uint8_t *hash_buffer = malloc(SIZE_SHA256);
@@ -24,10 +34,12 @@ int intern_find_hash(uint8_t *hash, char *path)
     
     // Size
     fseek(f, 0, SEEK_END);
-    int hash_count = ftell(f);
+    int hash_count = ftell(f)/SIZE_SHA256;
     rewind(f);
     
+    
     int retval = -1;
+    
     for (int i=0; i<hash_count; i++)
     {
         fread(hash_buffer, SIZE_SHA256, 1, f);
@@ -43,9 +55,59 @@ int intern_find_hash(uint8_t *hash, char *path)
     return retval;
 }
 
+void intern_hash_get(uint64_t height, uint8_t *dst, char *path)
+{
+    FILE *f;
+
+    f = fopen(path, "rb");
+    if (!f)
+        fatal("Failed to open file in intern_find_hash()");
+    
+    fseek(f, height*SIZE_SHA256, SEEK_SET);
+    
+    fread(dst,SIZE_SHA256,1,f);
+    
+    fclose(f);
+}
+
+void intern_hash_set(uint8_t *hash, char *path, uint64_t index)
+{
+    FILE *f = fopen(path, "rb");
+    if (!f)
+        fatal("Failed to open file in intern_set_hash()");
+    
+    fseek(f, index*SIZE_SHA256, SEEK_SET);
+    fwrite(hash,SIZE_SHA256,1,f);
+    
+    fclose(f);
+}
+
 /****************
  * TRANSACTIONS *
  ****************/
+
+tx_t *m_io_load_tx(uint8_t *hash)
+{
+    uint8_t *buffer = malloc(MAX_TX_SIZE);
+    io_load_tx_raw(hash, buffer);
+    tx_t *tx = m_tx_deserialize(buffer);
+    
+    free(buffer);
+    return tx;
+}
+
+void io_load_tx_raw(uint8_t *tx_hash_src, uint8_t *dst)
+{
+    uint8_t *block_hash = malloc(SIZE_SHA256);
+    int pos = io_block_of_tx(tx_hash_src, block_hash);
+    if (pos < 0)
+        fatal("Attempted to load tx without first checking existence with io_block_of_tx()");
+
+    io_load_nth_tx_raw(block_hash, pos, dst);
+    free(block_hash);
+}
+
+// Util
 
 void io_load_nth_tx_raw(uint8_t *block_hash, uint32_t n, uint8_t *dst)
 {
@@ -67,20 +129,6 @@ void io_load_nth_tx_raw(uint8_t *block_hash, uint32_t n, uint8_t *dst)
     free(block_buffer);
 }
 
-void io_load_tx_raw(uint8_t *tx_hash_src, uint8_t *dst)
-{
-    uint8_t *block_hash = malloc(SIZE_BLOCK_HASH);
-    int pos = io_block_of_tx(tx_hash_src, block_hash);
-    if (pos < 0)
-        fatal("Attempted to load tx without first checking existence with io_block_of_tx()");
-
-    io_load_nth_tx_raw(block_hash, pos, dst);
-    free(block_hash);
-}
-
-// Util
-
-
 int io_block_of_tx(uint8_t *src_tx_hash, uint8_t *dst_block_hash)
 {
     DIR *d;
@@ -91,12 +139,12 @@ int io_block_of_tx(uint8_t *src_tx_hash, uint8_t *dst_block_hash)
     {
         while ((dir = readdir(d)) != NULL)
         {
-            char *path = m_strconcat(7, getenv("HOME"),"/",CONFIG_DIR_FREECOIN,"/",DIR_TXINDEX,"/",dir->d_name);
+            char *path = m_strconcat(3, DIR_TXINDEX,"/",dir->d_name);
             
-            pos = intern_find_hash(src_tx_hash, path);
+            pos = intern_hash_getindex(src_tx_hash, path);
             if (pos >= 0)
             {
-                memcpy(dst_block_hash, dir->d_name, SIZE_BLOCK_HASH); // TODO does this work correctly?
+                memcpy(dst_block_hash, dir->d_name, SIZE_SHA256); // TODO does this work correctly?
                 break;
             }
             
@@ -111,11 +159,21 @@ int io_block_of_tx(uint8_t *src_tx_hash, uint8_t *dst_block_hash)
  * BLOCKS *
  **********/
 
+block_t *m_io_load_block(uint8_t *hash)
+{
+    uint8_t *buffer = malloc(MAX_BLOCK_SIZE);
+    io_load_block_raw(hash, buffer);
+    block_t *block = m_block_deserialize(buffer);
+    
+    free(buffer);
+    return block;
+}
+
 void io_load_block_raw(uint8_t *block_hash, uint8_t *dst)
 {
-    char block_hash_ascii[SIZE_BLOCK_HASH*2+1];
-    bytes_to_hexstr(block_hash_ascii, block_hash, SIZE_BLOCK_HASH);
-    char *block_file_name = m_strconcat(7, getenv("HOME"),"/",CONFIG_DIR_FREECOIN,"/",DIR_BLOCKS,"/",block_hash_ascii);
+    char block_hash_ascii[SIZE_SHA256*2+1];
+    bytes_to_hexstr(block_hash_ascii, block_hash, SIZE_SHA256);
+    char *block_file_name = m_strconcat(3, DIR_BLOCKS,"/",block_hash_ascii);
     
     FILE *f;
     long file_len;
@@ -138,18 +196,16 @@ void io_save_block(block_t *src)
 }
 void io_save_block_raw(uint8_t *src)
 {
-    uint8_t *block_hash = malloc(SIZE_BLOCK_HASH);
+    uint8_t *block_hash = malloc(SIZE_SHA256);
     block_raw_compute_hash(src, block_hash);
     
-    char block_hash_ascii[SIZE_BLOCK_HASH*2+1];
-    bytes_to_hexstr(block_hash_ascii, block_hash, SIZE_BLOCK_HASH);
-    
-    printf("\nAscii hash: %s\n", block_hash_ascii);////debug
+    char block_hash_ascii[SIZE_SHA256*2+1];
+    bytes_to_hexstr(block_hash_ascii, block_hash, SIZE_SHA256);
     
     uint64_t block_size = block_raw_compute_size(src);
     
-    char *block_file_name = m_strconcat(7, getenv("HOME"),"/",CONFIG_DIR_FREECOIN,"/",DIR_BLOCKS,"/",block_hash_ascii);
-    char *txindex_file_name = m_strconcat(7, getenv("HOME"),"/",CONFIG_DIR_FREECOIN,"/",DIR_TXINDEX,"/",block_hash_ascii);
+    char *block_file_name = m_strconcat(3, DIR_BLOCKS,"/",block_hash_ascii);
+    char *txindex_file_name = m_strconcat(3, DIR_TXINDEX,"/",block_hash_ascii);
     
     FILE *f;
     f = fopen(block_file_name, "wb");
@@ -178,7 +234,62 @@ void io_save_block_raw(uint8_t *src)
     free(block_hash);
 }
 
-// Util
+/*** BLOCKCHAIN ***/
 
-void io_block_at_height(uint32_t pos, uint8_t *dst_hash);
-int io_height_of_block(uint8_t *block_hash);
+void io_blockchain_set(uint8_t *hash, uint64_t height)
+{
+    intern_hash_set(hash, FILE_BLOCKCHAIN, height);
+}
+
+void io_block_at_height(uint64_t height, uint8_t *dst_hash)
+{
+    intern_hash_get(height, dst_hash, FILE_BLOCKCHAIN);
+}
+int64_t io_height_of_block(uint8_t *hash)
+{
+    return intern_hash_getindex(hash, FILE_BLOCKCHAIN);
+}
+
+int64_t io_blockchain_state(uint8_t *dst_hash)
+{
+    FILE *f;
+
+    f = fopen(FILE_BLOCKCHAIN, "rb");
+    if (!f)
+        fatal("Failed to open file in intern_find_hash()");
+    
+    // Size
+    fseek(f, -SIZE_SHA256, SEEK_CURR);
+    int64_t bytes = ftell(f);
+    int64_t height = bytes/SIZE_SHA256;
+    fread(dst_hash,SIZE_SHA256,1,f);
+    fclose(f);
+    
+    if ((bytes % SIZE_SHA256) != 0)
+        fatal("(bytes % SIZE_SHA256) != 0");
+    return height;
+}
+
+/* SAFE BLOCKCHAIN */
+// Note: These only insure the blockchain stays chained.
+// They do not check the validity of transactions or blocks.
+
+void ios_blockchain_add(uint8_t *hash)
+{
+    block_t *block = m_io_load_block(hash);
+    
+    uint8_t *buffer = malloc(SIZE_SHA256);
+    int64_t height = io_blockchain_state(buffer);
+    if (memcmp(buffer, block->header.prev_hash, SIZE_SHA256) != 0 ||
+        height != block->header.height-1)
+        fatal("Unsafe add to blockchain at height %d", block->header.height);
+    
+    intern_hash_set(hash, FILE_BLOCKCHAIN, height+1)
+    
+    m_free_block(block);
+}
+
+void ios_blockchain_rev(uint8_t *hash_newtop)
+{
+    fatal("Unimplemented: ios_blockchain_rev");
+}
