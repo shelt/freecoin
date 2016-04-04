@@ -13,9 +13,9 @@ void block_header_serialize(block_header_t *src, uint8_t *dst)
     ustob(src->version, &dst[POS_BLOCK_HEADER_VERSION]);
     uitob(src->time   , &dst[POS_BLOCK_HEADER_TIME]);
     uitob(src->height , &dst[POS_BLOCK_HEADER_HEIGHT]);
-    memcpy(&dst[POS_BLOCK_HEADER_PREV_HASH], src->prev_hash    , SIZE_BLOCK_HEADER_PREV_HASH);
+    memcpy(&dst[POS_BLOCK_HEADER_PREV_HASH]  , src->prev_hash  , SIZE_BLOCK_HEADER_PREV_HASH);
     memcpy(&dst[POS_BLOCK_HEADER_MERKLE_ROOT], src->merkle_root, SIZE_BLOCK_HEADER_MERKLE_ROOT);
-    dst[POS_BLOCK_HEADER_TARGET] = src->target;
+    memcpy(&dst[POS_BLOCK_HEADER_TARGET]     , src->target     , SIZE_BLOCK_HEADER_TARGET);
     uitob(src->nonce   , &dst[POS_BLOCK_HEADER_NONCE]);
     uitob(src->tx_count, &dst[POS_BLOCK_HEADER_TX_COUNT]);
 }
@@ -26,7 +26,7 @@ void block_header_deserialize(uint8_t *src, block_header_t *dst)
     dst->height  = btoui(&src[POS_BLOCK_HEADER_HEIGHT]);
     memcpy(dst->prev_hash  ,   &src[POS_BLOCK_HEADER_PREV_HASH], SIZE_BLOCK_HEADER_PREV_HASH);
     memcpy(dst->merkle_root, &src[POS_BLOCK_HEADER_MERKLE_ROOT], SIZE_BLOCK_HEADER_MERKLE_ROOT);
-    dst->target = src[POS_BLOCK_HEADER_TARGET];
+    memcpy(dst->target     , &src[POS_BLOCK_HEADER_TARGET]     , SIZE_BLOCK_HEADER_TARGET);
     dst->nonce = btoui(&src[POS_BLOCK_HEADER_NONCE]);
     dst->tx_count = btoui(&src[POS_BLOCK_HEADER_TX_COUNT]);
 }

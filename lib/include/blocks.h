@@ -16,17 +16,17 @@
 #define POS_BLOCK_HEADER_PREV_HASH 10
 #define POS_BLOCK_HEADER_MERKLE_ROOT 42
 #define POS_BLOCK_HEADER_TARGET 74
-#define POS_BLOCK_HEADER_NONCE 75
-#define POS_BLOCK_HEADER_TX_COUNT 79
+#define POS_BLOCK_HEADER_NONCE 76
+#define POS_BLOCK_HEADER_TX_COUNT 80
 
 // Sizes
-#define SIZE_BLOCK_HEADER 83
+#define SIZE_BLOCK_HEADER 84
 #define SIZE_BLOCK_HEADER_VERSION 2
 #define SIZE_BLOCK_HEADER_TIME 4
 #define SIZE_BLOCK_HEADER_HEIGHT 4
 #define SIZE_BLOCK_HEADER_PREV_HASH 32
 #define SIZE_BLOCK_HEADER_MERKLE_ROOT 32
-#define SIZE_BLOCK_HEADER_TARGET 1
+#define SIZE_BLOCK_HEADER_TARGET 2
 #define SIZE_BLOCK_HEADER_NONCE 4
 #define SIZE_BLOCK_HEADER_TX_COUNT 4
 
@@ -37,7 +37,7 @@ typedef struct
     uint32_t height;
     uint8_t prev_hash[32];
     uint8_t merkle_root[32];
-    uint8_t target;
+    uint8_t target[2]; // Non-ordinal
     uint32_t nonce;
     uint32_t tx_count;
 } block_header_t;
