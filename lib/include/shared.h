@@ -10,6 +10,8 @@
 
 #define __VERSION 2
 
+#define RSA_NBITS 4096
+
 // Maxmimums (not protocol. used during buffer allocation)
 // 1024*1024*1024
 #define MAX_BLOCK_SIZE 1073741824
@@ -23,6 +25,7 @@
 // CONFIG OPTIONS
 
 
+void init();
 
 void fatal(const char *string, ...);
 
