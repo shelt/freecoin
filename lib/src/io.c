@@ -259,7 +259,7 @@ int64_t io_blockchain_state(uint8_t *dst_hash)
         fatal("Failed to open file in intern_find_hash()");
     
     // Size
-    fseek(f, -SIZE_SHA256, SEEK_CURR);
+    fseek(f, -SIZE_SHA256, SEEK_CUR);
     int64_t bytes = ftell(f);
     int64_t height = bytes/SIZE_SHA256;
     fread(dst_hash,SIZE_SHA256,1,f);
@@ -284,7 +284,7 @@ void ios_blockchain_add(uint8_t *hash)
         height != block->header.height-1)
         fatal("Unsafe add to blockchain at height %d", block->header.height);
     
-    intern_hash_set(hash, FILE_BLOCKCHAIN, height+1)
+    intern_hash_set(hash, FILE_BLOCKCHAIN, height+1);
     
     m_free_block(block);
 }
