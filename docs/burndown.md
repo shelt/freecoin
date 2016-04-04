@@ -23,7 +23,8 @@
   * ~~Functions to add and remove from chain index~~
   * ~~Function to check if a block is in the chain (ie or in limbo)~~
 * ~~Safe wrapper for IO and such~~
-* admin.c; adding genesis block and whatnot
+* ui.c; smart interaction via command line
+* Admin binary, other binaries
 * Validation: Txs and Blocks
   * Target validation: second byte is `<32`
 * UI
