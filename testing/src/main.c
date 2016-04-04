@@ -7,6 +7,7 @@
 #include <shared.h>
 #include <blocks.h>
 #include <crypto.h>
+#include <bignum.h>
 
 void test_io()
 {
@@ -34,7 +35,8 @@ void test_io()
     block.header.height = 0;
     memset(block.header.prev_hash, 0xB, member_size(block_header_t,prev_hash));
     // merkle generated later
-    block.header.target = 0xC;
+    block.header.target[0] = 0xff;
+    block.header.target[1] = 0x00;
     block.header.nonce = 0xA;
     block.header.tx_count = 1;
     
@@ -57,6 +59,7 @@ void test_io()
     
     io_load_block_raw(block_hash,block_raw_loaded);
     
+    block_t *block_loaded = m_block_deserialize(block_raw_loaded);
     printf("Load->Save raw memcmp: %d\n", memcmp(block_raw,block_raw_loaded, block_size));
     //todo struct cmp
 }
@@ -102,9 +105,45 @@ void test_sha256()
     free(dst);
 }
 
+void test_math()
+{
+    bignum_t big1,big2,big3;
+    big1.size = SIZE_SHA256*2;
+    big2.size = SIZE_SHA256*2;
+    big3.size = SIZE_SHA256*2;
+    big1.data = malloc(big1.size);
+    big2.data = malloc(big2.size);
+    big3.data = malloc(big3.size);
+    
+    // Addition
+    big_uitobig(0x074a1f, big1);
+    big_uitobig(0xa363, big2);
+    
+    big_add(big1, big2);
+    printf("add : 0x074a1f+0xa363 = %d : %d\n", big_bigtoui(big2), 0x074a1f+0xa363 == big_bigtoui(big2));
+    
+    // Multiplication
+    big_uitobig(0x074a, big1);
+    big_uitobig(0xa363, big2);
+    
+    big_mult(big1, big2, big3);
+    printf("mult: 0x074a*0xa363 = %d : %d\n", big_bigtoui(big3), 0x074a*0xa363 == big_bigtoui(big3));
+    
+    // Division
+    big_uitobig(0x074c, big1);
+    
+    big_div(big1, 2, big3);
+    printf("div : 0x074c/2 = %d : %d\n", big_bigtoui(big3), 0x074c/2 == big_bigtoui(big3));
+    
+    free(big1.data);
+    free(big2.data);
+    free(big3.data);
+}
+
 int main(void)
 {
     io_init();
+    test_math();
     test_io();
     
     return 0;

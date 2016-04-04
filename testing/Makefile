@@ -12,7 +12,7 @@ LIB_INCLUDE=../lib/include
 CC=gcc
 CFLAGS=-Wall -std=c99 -lpthread -lfreecoin -L$(LIB_ARCHIVE) -I$(I_DIR) -I$(LIB_INCLUDE) -Wno-unused-variable
 
-default: init testing
+default: init main
 
 # See "Secondary Expansion"
 .SECONDEXPANSION:
@@ -21,7 +21,7 @@ default: init testing
 $(O_DIR)/%.o: $(S_DIR)/%.c
 	$(CC) -c $< -o $@ $(CFLAGS)
 
-testing: $(addprefix $(O_DIR)/, $(addsuffix .o, $(basename $(shell cd $(S_DIR) && find $@ -name '*.c'))))
+main: $(addprefix $(O_DIR)/, $(addsuffix .o, $(basename $(shell cd $(S_DIR) && find $@ -name '*.c'))))
 	$(CC) $^ -o $(B_DIR)/$(BIN_NAME) $(CFLAGS)
 
 .PHONY: clean
