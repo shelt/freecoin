@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+void swap_bo(uint8_t *arr, uint32_t len);
+
 void ustob(uint16_t src, uint8_t *dst);
 void uitob(uint32_t src, uint8_t *dst);
 

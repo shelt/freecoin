@@ -1,5 +1,17 @@
 #include "util.h"
 #include <arpa/inet.h>
+#include <time.h>
+#include <stdlib.h>
+#include <string.h>
+
+void swap_bo(uint8_t *arr, uint32_t len)
+{
+    uint8_t *tmp = malloc(len);
+    for (int i=0; i<len; i++)
+        tmp[len-1-i] = arr[i];
+    memcpy(arr,tmp,len);
+    free(tmp);
+}
 
 void ustob(uint16_t src, uint8_t *dst)
 {
