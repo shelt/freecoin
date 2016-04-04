@@ -17,5 +17,7 @@ char nibble_to_hexc(uint8_t n);
 void hexstr_to_bytes(uint8_t *bytearr, char *string, size_t bytes);
 void bytes_to_hexstr(char *string, uint8_t *bytes, size_t bytes_count);
 
+uint32_t get_net_time();
+
 #endif /* UTIL_H */
 

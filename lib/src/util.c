@@ -78,3 +78,8 @@ void bytes_to_hexstr(char *string, uint8_t *bytes, size_t bytes_count)
     }
     string[bytes_count*2] = '\0';
 }
+
+uint32_t get_net_time()
+{
+    return time(NULL); //TODO make use network times from peers
+}
