@@ -42,5 +42,13 @@ int64_t io_height_of_block(uint8_t *hash);
 void ios_blockchain_add(uint8_t *hash);
 void ios_blockchain_rev(uint8_t *hash_newtop);
 
+/* KEYS */
+
+
+void io_store_key(uint8_t *pub, uint8_t *priv);
+
+void crypt_addr(uint8_t *pub, uint8_t *dst);
+
+
 #endif /* IO_H */
 

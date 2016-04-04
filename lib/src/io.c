@@ -3,10 +3,14 @@
 #include "shared.h"
 #include "util.h"
 #include "fs.h"
+#include "secrets.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #define SIZE_SHA256 32
 
@@ -14,6 +18,7 @@ static char *ROOT_FREECOIN;
 static char *FILE_BLOCKCHAIN;
 static char *DIR_BLOCKS;
 static char *DIR_TXINDEX;
+static char *DIR_KEYS;
 
 void io_init()
 {
@@ -21,6 +26,7 @@ void io_init()
     FILE_BLOCKCHAIN = m_strconcat(2, ROOT_FREECOIN, "/blockchain");
     DIR_BLOCKS      = m_strconcat(2, ROOT_FREECOIN, "/blocks/");
     DIR_TXINDEX     = m_strconcat(2, ROOT_FREECOIN, "/txindex/");
+    DIR_KEYS        = m_strconcat(2, ROOT_FREECOIN, "/keys/");
 }
 
 int64_t intern_hash_getindex(uint8_t *hash, char *path)
@@ -292,4 +298,38 @@ void ios_blockchain_add(uint8_t *hash)
 void ios_blockchain_rev(uint8_t *hash_newtop)
 {
     fatal("Unimplemented: ios_blockchain_rev");
+}
+
+/* KEYS */
+
+void io_store_key(uint8_t *pub, uint8_t *priv)
+{
+    uint8_t addr[SIZE_SHA256] = {0};
+    char addr_ascii[SIZE_SHA256*2+1];
+    crypt_addr(pub, addr);
+    bytes_to_hexstr(addr_ascii, addr, SIZE_SHA256);
+    
+    printf("New key: %s\n", addr_ascii);
+    char *addr_dir = m_strconcat(4, DIR_KEYS,"/",addr_ascii,"/");
+    
+    char *private_file_name = m_strconcat(2, addr_dir,"/private");
+    char *public_file_name  = m_strconcat(2, addr_dir,"/public");
+    
+    struct stat st = {0};
+    if (stat("/some/directory", &st) != -1)
+        fatal("Attempted to store existing key");
+    mkdir(addr_dir, 0700);
+    
+    FILE *f;
+    f = fopen(private_file_name, "wb");
+    fwrite(priv, SIZE_ECDSA_PRIVATE, 1, f);
+    fclose(f);
+    
+    f = fopen(public_file_name, "wb");
+    fwrite(pub, SIZE_ECDSA_PUBLIC, 1, f);
+    fclose(f);
+    
+    free(addr_dir);
+    free(private_file_name);
+    free(public_file_name);
 }
