@@ -1,6 +1,6 @@
 #include <string.h> 
 #include "shared.h"
-#include "crypto.h"
+#include "sha256.h"
 
 // DBL_INT_ADD treats two unsigned ints a and b as one 64-bit integer and adds c to it
 #define DBL_INT_ADD(a,b,c) if (a > 0xffffffff - (c)) ++b; a += c;
@@ -27,7 +27,7 @@ uint32_t k[64] =
 };
 
 
-void sha256_transform(crypto_sha256_ctx *ctx, uint8_t data[])
+void sha256_transform(crypt_sha256_ctx *ctx, uint8_t data[])
 {  
    uint32_t a,b,c,d,e,f,g,h,i,j,t1,t2,m[64];
       
@@ -69,7 +69,7 @@ void sha256_transform(crypto_sha256_ctx *ctx, uint8_t data[])
    ctx->state[7] += h;
 }  
 
-void sha256_init(crypto_sha256_ctx *ctx)
+void sha256_init(crypt_sha256_ctx *ctx)
 {  
    ctx->datalen = 0; 
    ctx->bitlen[0] = 0; 
@@ -84,7 +84,7 @@ void sha256_init(crypto_sha256_ctx *ctx)
    ctx->state[7] = 0x5be0cd19;
 }
 
-void sha256_update(crypto_sha256_ctx *ctx, uint8_t data[], size_t len)
+void sha256_update(crypt_sha256_ctx *ctx, uint8_t data[], size_t len)
 {  
    uint32_t i;
    
@@ -101,12 +101,12 @@ void sha256_update(crypto_sha256_ctx *ctx, uint8_t data[], size_t len)
    }  
 }
 // Access the current state of the transformation TODO
-void sha256_state(crypto_sha256_ctx *ctx, uint8_t state[])
+void sha256_state(crypt_sha256_ctx *ctx, uint8_t state[])
 {
     //TODO
 };
 
-void sha256_final(crypto_sha256_ctx *ctx, uint8_t hash[])
+void sha256_final(crypt_sha256_ctx *ctx, uint8_t hash[])
 {  
    uint32_t i; 
    
