@@ -1,6 +1,6 @@
 #include "transactions.h"
 #include "blocks.h"
-#include "crypto.h"
+#include "sha256.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -133,7 +133,7 @@ void tx_compute_hash(tx_t *tx, uint8_t *dst)
 
 void tx_raw_compute_hash(uint8_t *tx, uint8_t *dst)   
 {
-    crypto_sha256_ctx *ctx = malloc(sizeof(crypto_sha256_ctx));
+    crypt_sha256_ctx *ctx = malloc(sizeof(crypt_sha256_ctx));
     
     sha256_init(ctx);
     sha256_update(ctx, tx, tx_raw_compute_size(tx));
@@ -146,7 +146,7 @@ void compute_merkle_root(tx_t **txs, uint32_t tx_count, uint8_t *out)
 {
     uint8_t *tree_hashes[tx_count];                               // An array of pointers to leaves
     uint8_t *buffer = malloc(member_size(block_header_t, merkle_root)); // The buffer where SHA256s are generated.
-    crypto_sha256_ctx *ctx = malloc(sizeof(crypto_sha256_ctx));   // The SHA256 context.
+    crypt_sha256_ctx *ctx = malloc(sizeof(crypt_sha256_ctx));   // The SHA256 context.
     
     // Allocate hashspace
     int i;

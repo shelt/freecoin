@@ -1,6 +1,6 @@
 #include "blocks.h"
 #include "util.h"
-#include "crypto.h"
+#include "sha256.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -94,7 +94,7 @@ void block_compute_hash(block_t *block, uint8_t *dst)
 }
 void block_raw_compute_hash(uint8_t *block, uint8_t *dst)
 {
-    crypto_sha256_ctx *ctx = malloc(sizeof(crypto_sha256_ctx));
+    crypt_sha256_ctx *ctx = malloc(sizeof(crypt_sha256_ctx));
     
     sha256_init(ctx);
     sha256_update(ctx, &block[POS_BLOCK_HEADER], SIZE_BLOCK_HEADER);
