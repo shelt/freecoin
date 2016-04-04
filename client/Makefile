@@ -4,7 +4,7 @@ O_DIR = build
 B_DIR = bin
 S_DIR = src
 
-BIN_NAME=freecoin-testing
+BIN_NAME=freecoin-client
 
 LIB_ARCHIVE=../lib/lib
 LIB_INCLUDE=../lib/include

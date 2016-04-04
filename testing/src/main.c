@@ -7,6 +7,7 @@
 #include <shared.h>
 #include <blocks.h>
 #include <crypto.h>
+#include <sha256.h>
 #include <bignum.h>
 
 void test_io()
@@ -89,7 +90,7 @@ void test_sha256()
     uint8_t *dst = malloc(SIZE_SHA256);
     memset(src, 0x7a, size);
     
-    crypto_sha256_ctx *ctx = malloc(sizeof(crypto_sha256_ctx));
+    crypt_sha256_ctx *ctx = malloc(sizeof(crypt_sha256_ctx));
     
     sha256_init(ctx);
     sha256_update(ctx, src, size);
@@ -140,11 +141,17 @@ void test_math()
     free(big3.data);
 }
 
+void test_ecc()
+{
+    
+}
+
 int main(void)
 {
     io_init();
-    test_math();
-    test_io();
+    //test_math();
+    //test_io();
+    crypt_test();
     
     return 0;
 }
