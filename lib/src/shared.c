@@ -7,6 +7,8 @@
 void init()
 {
     io_init();
+    util_init();
+    
 }
 
 void fatal(const char *string, ...)

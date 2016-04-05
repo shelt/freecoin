@@ -178,7 +178,7 @@ block_t *m_io_load_block(uint8_t *hash)
 void io_load_block_raw(uint8_t *block_hash, uint8_t *dst)
 {
     char block_hash_ascii[SIZE_SHA256*2+1];
-    bytes_to_hexstr(block_hash_ascii, block_hash, SIZE_SHA256);
+    btoascii(block_hash_ascii, block_hash, SIZE_SHA256);
     char *block_file_name = m_strconcat(3, DIR_BLOCKS,"/",block_hash_ascii);
     
     FILE *f;
@@ -206,7 +206,7 @@ void io_save_block_raw(uint8_t *src)
     block_raw_compute_hash(src, block_hash);
     
     char block_hash_ascii[SIZE_SHA256*2+1];
-    bytes_to_hexstr(block_hash_ascii, block_hash, SIZE_SHA256);
+    btoascii(block_hash_ascii, block_hash, SIZE_SHA256);
     
     uint64_t block_size = block_raw_compute_size(src);
     
@@ -305,9 +305,10 @@ void ios_blockchain_rev(uint8_t *hash_newtop)
 void io_store_key(uint8_t *pub, uint8_t *priv)
 {
     uint8_t addr[SIZE_SHA256] = {0};
-    char addr_ascii[SIZE_SHA256*2+1];
     crypt_addr(pub, addr);
-    bytes_to_hexstr(addr_ascii, addr, SIZE_SHA256);
+    char addr_ascii[base64_encoded_size(SIZE_SHA256)+1];
+    base64_encode(addr, addr_ascii, SIZE_SHA256);
+    //btoascii(addr_ascii, addr, SIZE_SHA256);
     
     printf("New key: %s\n", addr_ascii);
     char *addr_dir = m_strconcat(4, DIR_KEYS,"/",addr_ascii,"/");

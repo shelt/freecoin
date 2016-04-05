@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+void util_init();
+
 void swap_bo(uint8_t *arr, uint32_t len);
 
 void ustob(uint16_t src, uint8_t *dst);
@@ -14,8 +16,16 @@ uint32_t btoui(uint8_t *src);
 uint8_t hexc_to_nibble(char c);
 char nibble_to_hexc(uint8_t n);
 
-void hexstr_to_bytes(uint8_t *bytearr, char *string, size_t bytes);
-void bytes_to_hexstr(char *string, uint8_t *bytes, size_t bytes_count);
+void asciitob(uint8_t *bytearr, char *string, size_t bytes);
+void btoascii(char *string, uint8_t *bytes, size_t bytes_count);
+
+uint32_t base64_encoded_size(uint32_t bytes);
+uint32_t base64_decoded_size(uint32_t strlen);
+
+void base64_encode(const uint8_t *data, char *dst, uint32_t bytes);
+
+void base64_decode(const char *ascii, uint8_t *dst, uint32_t bytes);
+
 
 uint32_t get_net_time();
 
