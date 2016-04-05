@@ -19,8 +19,11 @@ With banks that deal with regular currencies, all regulation happens in one plac
 >
 > The freecoin protocol requires a reliable underlying transport layer protocol. This is due to the nature of the exchanged data; info must be able to permeate the network quickly.
 
+> **Note: Some info may be slightly dated and will soon be updated according to the source (revision 5).**
+
 ### Message content types
 > Messages can be of fixed or variable size. If they are the latter, some fixed part of their content specifies the size of the following content. All messages have an additional 3 bytes at the beginning specifying their client version and their content type.
+
 
 | Name | reject |
 | ---- | ---- |
@@ -385,13 +388,6 @@ TODO
 
 ## Source information
 
-### Data storage
-Freecoin currently uses Berkeley DB for data storage.
-* `blockhash:blockdata`
-  *`txhash`:`blockdata` (secondary)
-* `node`:TODO
-
-
 
 ## Source guidelines
 * `size_t` should be used when dealing with array sizes UNLESS it is measuring lengths of serialized data (where such a number would need to fit in the specified range).
@@ -407,13 +403,42 @@ Freecoin currently uses Berkeley DB for data storage.
 
 ## Todo
 
-### Questions
-> Blockchain transactions need to be indexed to validate blocks and transactions. Should transactions in blocks in limbo also be indexed?
+### NOTICE
+> Remember to disable switching back to big endian after sha256. It's a wasteful operation, and we already want it in little endian because that's what our compare function uses. Alternatively, modify the compare function.
 
-**A: ** No. We only need to index transactions to determine if they should be added to our workblock. If our workblock is included in the blockchain, the limbo blocks are not relevant. Similarily, if the limbo blocks end up being used in the blockchain, our workblock is not relevant.
+### Routine
+* Unix philosophy: Do one thing and do it well
+* Dynamic programming principles
+* Commits should coorespond to checks off the burndown
+* Find memory leaks by grepping for "m_" and "malloc"
+* Check:
+  * for failure of fopen() and *alloc()
+  * that conversions to primitive types are in host byte order
 
-### Roadmap
-* How do we store blocks on the filesystem?
+### Burndown
+* ~~Tx structs~~
+* ~~Tx (de)serializing~~
+* ~~Block structs~~
+* ~~Block (de)serializing~~
+* IO
+  * ~~Tx storage~~
+  * ~~Block storage~~
+  * ~~Functions to add and remove from chain index~~
+  * ~~Function to check if a block is in the chain (ie or in limbo)~~
+* ~~Safe wrapper for IO and such~~
+* Networking (current)
+* Validation: Txs and Blocks
+  * Target validation: second byte is `<32`
+* Mining binay
+* Other binaries
+* UI
+  * Command line options
+  * fprint_tx()
+  * fprint_block()
+
+
+### Far future
+* Config file
 
 
 ### Misc
