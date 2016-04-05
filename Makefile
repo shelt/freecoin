@@ -1,9 +1,17 @@
+.PHONY: lib clean
+BINS=admin client freecoind miner testing
 
-#//ONVER:1.0 Must be changed to "client" rule
-default:testing
+default: all
+all: $(BINS)
+dist: default
+	make dist -C lib
 
 lib:
-	cd lib && make
+	make -C lib
 
-%: lib
-	cd $@ && make
+$(BINS): lib
+	make -C $@
+
+clean:
+	$(foreach dir,$(BINS), make clean -C $(dir);)
+	make clean -C lib

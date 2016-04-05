@@ -4,13 +4,10 @@ O_DIR = build
 B_DIR = bin
 S_DIR = src
 
-BIN_NAME=freecoin-testing
-
-LIB_ARCHIVE=../lib/lib
-LIB_INCLUDE=../lib/include
+BIN_NAME=freecoin-miner
 
 CC=gcc
-CFLAGS=-Wall -std=c99 -lpthread -lfreecoin -L$(LIB_ARCHIVE) -I$(I_DIR) -I$(LIB_INCLUDE) -Wno-unused-variable
+CFLAGS=-Wall -std=c99 -lpthread -lfreecoin -I$(I_DIR) -Wno-unused-variable
 
 default: init main
 
@@ -31,3 +28,4 @@ init:
 clean:
 	-rm -rf ./$(O_DIR)/*
 	-rm -rf ./$(B_DIR)/*
+	-rm -rf ./$(L_DIR)/*

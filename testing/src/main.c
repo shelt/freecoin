@@ -1,14 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <io.h>
-#include <transactions.h>
-#include <util.h>
-#include <shared.h>
-#include <blocks.h>
-#include <crypto.h>
-#include <sha256.h>
-#include <bignum.h>
+
+#include <freecoin/io.h>
+#include <freecoin/transactions.h>
+#include <freecoin/util.h>
+#include <freecoin/shared.h>
+#include <freecoin/blocks.h>
+#include <freecoin/secrets.h>
+#include <freecoin/sha256.h>
+#include <freecoin/bignum.h>
+
 
 void test_io()
 {
@@ -70,8 +72,8 @@ void test_util()
     char *hexstr = "004c95b825791b1ee46ce377744d9cbd9d5dfae4712264832647cfc0a7d9106f";
     char *hexstr2 = malloc(64+1);
     uint8_t *bytes = malloc(32);
-    hexstr_to_bytes(bytes, hexstr, 32);
-    bytes_to_hexstr(hexstr2, bytes, 32);
+    asciitob(bytes, hexstr, 32);
+    btoascii(hexstr2, bytes, 32);
     
     printf("hexstr1: %s\n", hexstr);
     printf("hexstr2: %s\n", hexstr2);
@@ -81,6 +83,16 @@ void test_util()
     for (int i=0; i<4; i++)
         printf("%02x", buff[i]);
     printf("\n34 == %d\n", btoui(buff));
+    
+    /// base64
+    char base64ascii[base64_encoded_size(32)];
+    base64_encode(bytes, base64ascii, 32);
+    printf("%s\n", base64ascii);
+    base64_decode(base64ascii, bytes, 32);
+    
+        for (int i=0; i<32; i++)
+        printf("%02x", bytes[i]);
+    printf("\n");
 }
 
 void test_sha256()
@@ -148,10 +160,10 @@ void test_ecc()
 
 int main(void)
 {
-    io_init();
+    init();
+    test_util();
     //test_math();
     //test_io();
-    crypt_test();
     
     return 0;
 }

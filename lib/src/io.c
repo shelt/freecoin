@@ -306,12 +306,13 @@ void io_store_key(uint8_t *pub, uint8_t *priv)
 {
     uint8_t addr[SIZE_SHA256] = {0};
     crypt_addr(pub, addr);
-    char addr_ascii[base64_encoded_size(SIZE_SHA256)+1];
-    base64_encode(addr, addr_ascii, SIZE_SHA256);
-    //btoascii(addr_ascii, addr, SIZE_SHA256);
+    char addr_hexascii[SIZE_SHA256*2+1];
+    char addr_64ascii[base64_encoded_size(SIZE_SHA256)+1];
+    base64_encode(addr, addr_64ascii, SIZE_SHA256);
+    btoascii(addr_hexascii, addr, SIZE_SHA256);
     
-    printf("New key: %s\n", addr_ascii);
-    char *addr_dir = m_strconcat(4, DIR_KEYS,"/",addr_ascii,"/");
+    printf("New key: %s\n", addr_64ascii);
+    char *addr_dir = m_strconcat(4, DIR_KEYS,"/",addr_hexascii,"/");
     
     char *private_file_name = m_strconcat(2, addr_dir,"/private");
     char *public_file_name  = m_strconcat(2, addr_dir,"/public");

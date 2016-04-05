@@ -13,6 +13,9 @@ CFLAGS=-Wall -std=c99 -lpthread -I$(I_DIR) -Wno-unused-variable
 .SECONDEXPANSION:
 
 default: init freecoin
+dist: default
+	sudo cp -R $(L_DIR)/* /usr/local/lib
+	sudo cp -R $(I_DIR)/ /usr/local/include/freecoin
 
 # Generate object file
 $(O_DIR)/%.o: $(S_DIR)/%.c
@@ -21,8 +24,9 @@ $(O_DIR)/%.o: $(S_DIR)/%.c
 # Main target
 freecoin: $(addprefix $(O_DIR)/, $(addsuffix .o, $(basename $(shell cd $(S_DIR) && find $@ -name '*.c'))))
 	$(AR) rcs $(L_DIR)/libfreecoin.a $^
+	
 
-.PHONY: clean
+.PHONY: lib clean
 init:
 	-mkdir -p $(O_DIR) $(L_DIR)
 	-cd $(S_DIR) && find -type d -exec mkdir -p "../$(O_DIR)/{}" \;

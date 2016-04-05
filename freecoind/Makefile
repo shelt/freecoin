@@ -4,7 +4,7 @@ O_DIR = build
 B_DIR = bin
 S_DIR = src
 
-BIN_NAME=freecoin-client
+BIN_NAME=freecoind
 
 CC=gcc
 CFLAGS=-Wall -std=c99 -lpthread -lfreecoin -I$(I_DIR) -Wno-unused-variable
