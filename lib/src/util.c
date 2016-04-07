@@ -47,6 +47,7 @@ void uitob(uint32_t src, uint8_t *dst)
     dst[3] = src & 0xff;
 }
 
+// TODO order conversion
 uint16_t btous(uint8_t *src)
 {
     return (uint16_t) ((src[0] << 8) | src[1]);
