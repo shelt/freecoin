@@ -16,6 +16,7 @@ tx_t *m_io_load_tx(uint8_t *hash);
 void io_load_tx_raw(uint8_t *tx_hash_src, uint8_t *dst);
 
 // Util
+void io_load_nth_tx_output(uint8_t *tx_hash, uint16_t index, tx_output_t *dst); //TODO implement
 void io_load_nth_tx_raw(uint8_t *block_hash, uint32_t n, uint8_t *dst);
 int io_block_of_tx(uint8_t *src_tx_hash, uint8_t *dst_block_hash);
 

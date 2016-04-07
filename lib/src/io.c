@@ -4,6 +4,7 @@
 #include "util.h"
 #include "fs.h"
 #include "secrets.h"
+#include "sha256.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,25 +12,51 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #define SIZE_SHA256 32
 
 static char *ROOT_FREECOIN;
-static char *FILE_BLOCKCHAIN;
 static char *DIR_BLOCKS;
+static char *DIR_HEADS;
 static char *DIR_TXINDEX;
 static char *DIR_KEYS;
 
 void io_init()
 {
     ROOT_FREECOIN   = m_strconcat(2, getenv("HOME"),"/.freecoin/");
-    FILE_BLOCKCHAIN = m_strconcat(2, ROOT_FREECOIN, "/blockchain");
     DIR_BLOCKS      = m_strconcat(2, ROOT_FREECOIN, "/blocks/");
+    DIR_HEADS       = m_strconcat(2, ROOT_FREECOIN, "/heads/");
     DIR_TXINDEX     = m_strconcat(2, ROOT_FREECOIN, "/txindex/");
     DIR_KEYS        = m_strconcat(2, ROOT_FREECOIN, "/keys/");
 }
 
-int64_t intern_hash_getindex(uint8_t *hash, char *path)
+
+/*** HEADS ***/
+typedef struct
+{
+    uint32_t height;
+    uint8_t chained;
+    uint8_t hash[32];
+} head_t;
+
+/* Remove dead heads and stale heads/blocks */
+void intern_chain_clean();
+
+head_t *m_intern_chain_load_all_heads(uint32_t *dst_count);
+
+void intern_chain_load_head(uint8_t *hash, head_t *dst);
+
+void intern_chain_create_head(uint8_t *hash);
+
+void intern_chain_delete_head(uint8_t *hash);
+
+void intern_chain_update_head(head_t *head);
+
+
+/* HASHLISTS */
+
+int64_t intern_hashlist_getindex(uint8_t *hash, char *path)
 {
     FILE *f;
     uint8_t *hash_buffer = malloc(SIZE_SHA256);
@@ -42,7 +69,6 @@ int64_t intern_hash_getindex(uint8_t *hash, char *path)
     fseek(f, 0, SEEK_END);
     int hash_count = ftell(f)/SIZE_SHA256;
     rewind(f);
-    
     
     int retval = -1;
     
@@ -61,7 +87,7 @@ int64_t intern_hash_getindex(uint8_t *hash, char *path)
     return retval;
 }
 
-void intern_hash_get(uint64_t height, uint8_t *dst, char *path)
+void intern_hashlist_get(uint64_t height, uint8_t *dst, char *path)
 {
     FILE *f;
 
@@ -76,13 +102,11 @@ void intern_hash_get(uint64_t height, uint8_t *dst, char *path)
     fclose(f);
 }
 
-void intern_hash_set(uint8_t *hash, char *path, uint64_t index)
+void intern_hashlist_add(uint8_t *hash, char *path)
 {
-    FILE *f = fopen(path, "rb");
+    FILE *f = fopen(path, "ab");
     if (!f)
-        fatal("Failed to open file in intern_set_hash()");
-    
-    fseek(f, index*SIZE_SHA256, SEEK_SET);
+        fatal("Failed to open file in intern_hash add()");
     fwrite(hash,SIZE_SHA256,1,f);
     
     fclose(f);
@@ -147,7 +171,7 @@ int io_block_of_tx(uint8_t *src_tx_hash, uint8_t *dst_block_hash)
         {
             char *path = m_strconcat(3, DIR_TXINDEX,"/",dir->d_name);
             
-            pos = intern_hash_getindex(src_tx_hash, path);
+            pos = intern_hashlist_getindex(src_tx_hash, path);
             if (pos >= 0)
             {
                 memcpy(dst_block_hash, dir->d_name, SIZE_SHA256); // TODO does this work correctly?
@@ -164,6 +188,14 @@ int io_block_of_tx(uint8_t *src_tx_hash, uint8_t *dst_block_hash)
 /**********
  * BLOCKS *
  **********/
+
+void io_load_block_header(uint8_t *hash, block_header_t *dst)
+{
+    uint8_t *buffer = malloc(MAX_BLOCK_SIZE);
+    io_load_block_raw(hash, buffer);
+    block_header_deserialize(buffer, dst);
+    free(buffer);
+}
 
 block_t *m_io_load_block(uint8_t *hash)
 {
@@ -220,7 +252,7 @@ void io_save_block_raw(uint8_t *src)
     
     fclose(f);
     
-    // Txindex
+    /* Txindex */
     uint8_t *hash_buffer = malloc(SIZE_SHA256);
     f = fopen(txindex_file_name, "wb");
     
@@ -234,73 +266,58 @@ void io_save_block_raw(uint8_t *src)
         cursor += tx_raw_compute_size(&src[cursor]);
     }
     fclose(f);
+    
+    /* Head management */
+    block_header_t block_header;
+    block_header_deserialize(&src[POS_BLOCK_HEADER], &block_header);
+    uint32_t head_count;
+    head_t *heads = m_intern_chain_load_all_heads(&head_count);
+    
+    // Check if block can be appended to a head
+    for (int i=0; i<head_count; i++)
+    {
+        if (memcmp(block_header.merkle_root, heads[i].hash, SIZE_SHA256) == 0)
+        {
+            heads[i].height++;
+            memcpy(heads[i].hash, block_hash, SIZE_SHA256);
+            intern_chain_update_head(&heads[i]);
+            goto end;
+        }
+    }
+    // Check if the block is backreferenced by a non-fully-chained head
+    block_header_t temp_header;
+    uint8_t *curr_hash = malloc(SIZE_SHA256);
+    for (int i=0; i<head_count; i++)
+    {
+        if (heads[i].chained == 0)
+        {
+            memcpy(curr_hash, heads[i].hash, SIZE_SHA256);
+            while (1)
+            {
+                io_load_block_header(curr_hash, &temp_header);
+                if (memcmp(temp_header.prev_hash, block_hash, SIZE_SHA256) == 0)
+                    goto end;
+            }
+        }
+    }
+    // Create a new head for this block
+    head_t newhead;
+    newhead.chained = 0;
+    memcpy(newhead.hash, block_hash, SIZE_SHA256);
+    newhead.height = block_header.height;
+    
+    intern_chain_clean();
+    
+    end:
+    free(heads);
+    free(curr_hash);
     free(hash_buffer);
     free(block_file_name);
     free(txindex_file_name);
     free(block_hash);
 }
 
-/*** BLOCKCHAIN ***/
-
-void io_blockchain_set(uint8_t *hash, uint64_t height)
-{
-    intern_hash_set(hash, FILE_BLOCKCHAIN, height);
-}
-
-void io_block_at_height(uint64_t height, uint8_t *dst_hash)
-{
-    intern_hash_get(height, dst_hash, FILE_BLOCKCHAIN);
-}
-int64_t io_height_of_block(uint8_t *hash)
-{
-    return intern_hash_getindex(hash, FILE_BLOCKCHAIN);
-}
-
-int64_t io_blockchain_state(uint8_t *dst_hash)
-{
-    FILE *f;
-
-    f = fopen(FILE_BLOCKCHAIN, "rb");
-    if (!f)
-        fatal("Failed to open file in intern_find_hash()");
-    
-    // Size
-    fseek(f, -SIZE_SHA256, SEEK_CUR);
-    int64_t bytes = ftell(f);
-    int64_t height = bytes/SIZE_SHA256;
-    fread(dst_hash,SIZE_SHA256,1,f);
-    fclose(f);
-    
-    if ((bytes % SIZE_SHA256) != 0)
-        fatal("(bytes % SIZE_SHA256) != 0");
-    return height;
-}
-
-/* SAFE BLOCKCHAIN */
-// Note: These only insure the blockchain stays chained.
-// They do not check the validity of transactions or blocks.
-
-void ios_blockchain_add(uint8_t *hash)
-{
-    block_t *block = m_io_load_block(hash);
-    
-    uint8_t *buffer = malloc(SIZE_SHA256);
-    int64_t height = io_blockchain_state(buffer);
-    if (memcmp(buffer, block->header.prev_hash, SIZE_SHA256) != 0 ||
-        height != block->header.height-1)
-        fatal("Unsafe add to blockchain at height %d", block->header.height);
-    
-    intern_hash_set(hash, FILE_BLOCKCHAIN, height+1);
-    
-    m_free_block(block);
-}
-
-void ios_blockchain_rev(uint8_t *hash_newtop)
-{
-    fatal("Unimplemented: ios_blockchain_rev");
-}
-
-/* KEYS */
+/****** KEYS ******/
 
 void io_store_key(uint8_t *pub, uint8_t *priv)
 {
