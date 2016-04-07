@@ -22,14 +22,13 @@ block_t *m_gen_genesis_block()
 }
 
 // TODO verify this works correctly
-void compute_next_target(uint8_t *hash, uint8_t *next_target)
+void compute_next_target(block_t *block_b, uint8_t *next_target)
 {
     uint16_t retval;
     uint8_t *hash_buffer_1 = malloc(SIZE_SHA256);
     uint8_t *hash_buffer_2 = malloc(SIZE_SHA256);
     uint8_t *hash_buffer_3 = malloc(SIZE_SHA256);
     
-    block_t *block_b = m_io_load_block(hash);
     block_t *block_a;
     
     if (block_b->header.height < CHAIN_RECALC_INTERVAL)
@@ -69,7 +68,6 @@ void compute_next_target(uint8_t *hash, uint8_t *next_target)
         free(block_a);
     }
     
-    free(block_b);
     free(hash_buffer_1);
     free(hash_buffer_2);
     free(hash_buffer_3);

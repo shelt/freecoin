@@ -17,7 +17,7 @@
 
 block_t *m_genesis_block();
 
-void compute_next_target(uint8_t *hash, uint8_t *next_target);
+void compute_next_target(block_t *block_b, uint8_t *next_target);
 
 #endif /* CHAIN_H */
 
