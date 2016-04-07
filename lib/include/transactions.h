@@ -137,6 +137,13 @@ uint32_t tx_raw_compute_size(uint8_t *tx);
 void tx_compute_hash(tx_t *tx, uint8_t *dst);
 void tx_raw_compute_hash(uint8_t *tx, uint8_t *dst);
 
+//TODO implement these
+uint32_t tx_compute_surplus(tx_t *tx);
+uint32_t tx_compute_required_surplus(tx_t *tx);
+
+uint32_t tx_compute_size_signable_hash(tx_t *tx);
+void tx_generate_signable_hash(tx_t *tx, uint8_t *dst);
+
 void compute_merkle_root(tx_t **txs, uint32_t tx_count, uint8_t *out);
 
 

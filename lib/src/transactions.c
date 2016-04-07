@@ -112,7 +112,6 @@ void m_free_tx(tx_t *tx)
  * OTHER *
  *********/
 
-
 uint32_t tx_compute_size(tx_t *tx)
 {
     return SIZE_TX_HEADER +
@@ -140,6 +139,30 @@ void tx_raw_compute_hash(uint8_t *tx, uint8_t *dst)
     sha256_final(ctx, dst);
     
     free(ctx);
+}
+
+uint32_t tx_compute_size_signable_hash(tx_t *tx)
+{
+    return tx_compute_size(tx) - (tx->header.in_count * SIZE_TX_INPUT_SIG);
+}
+void tx_generate_signable_hash(tx_t *tx, uint8_t *dst)
+{
+    tx_header_serialize(&tx->header, &dst[POS_TX_HEADER]);
+    uint32_t cursor = POS_TX_HEADER;
+    for (int i=0; i<tx->header.in_count; i++)
+    {
+        ustob(tx->ins[i].out_index, &dst[cursor]);
+        cursor += SIZE_TX_INPUT_OUT_INDEX;
+        memcpy(&dst[cursor], tx->ins[i].ref_tx, SIZE_TX_INPUT_REF_TX);
+        cursor += SIZE_TX_INPUT_REF_TX;
+        memcpy(&dst[cursor], tx->ins[i].pubkey, SIZE_TX_INPUT_PUBKEY);
+        cursor += SIZE_TX_INPUT_PUBKEY;
+    }
+    for (int i=0; i<tx->header.out_count; i++)
+    {
+        tx_output_serialize(tx->outs, &dst[cursor]);
+        cursor += SIZE_TX_OUTPUT;
+    }
 }
 
 void compute_merkle_root(tx_t **txs, uint32_t tx_count, uint8_t *out)
