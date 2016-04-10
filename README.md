@@ -13,21 +13,20 @@ A cryptocurrency is a currency that is functionally possible because of cryptogr
 With banks that deal with regular currencies, all regulation happens in one place. Storing the amount of money each person has along with the processing of transactions all happens on a few servers. Though they probably take backups and security very seriously, banks (and the governments that regulate them) represent a central authority over a vastly powerful resource. With decentralized currencies, transactions are processed and balances are stored by the people. Everyone agrees on how things should work, so it works.
 
 ## Protocol specification
-#####Revision 4 - 9/28/15
+#####Revision 4.1 - 5/4/16
+
+> **NOTE**: *As of 5.4.16, networking is currently being overhauled.*
 
 > Freecoin uses a session-layer protocol that enables peer-to-peer communication. It is intended to be used specifically for freecoin. 
 >
 > The freecoin protocol requires a reliable underlying transport layer protocol. This is due to the nature of the exchanged data; info must be able to permeate the network quickly.
 
-> **Note: Some info may be slightly dated and will soon be updated according to the source (revision 5).**
-
 ### Message content types
-> Messages can be of fixed or variable size. If they are the latter, some fixed part of their content specifies the size of the following content. All messages have an additional 3 bytes at the beginning specifying their client version and their content type.
+> All messages have a 5 byte header specifying their length without the header (2 bytes), their protocol version (2 bytes) and their content type (1 byte).
 
-
-| Name | reject |
-| ---- | ---- |
-| Value    | 0  |
+| Name     | reject |
+| ----     | ----   |
+| Value    | 0      |
 | Size     | `1B + 1B + [<=255B] (ERRORTYPE + info_size + info)`  |
 | Purpose  | Tell a peer that a block/tx/time/alert/version is invalid. Sent in response to various messages.  |
 | Content  | ERRORTYPE byte and info about what specifically is invalid.    |
