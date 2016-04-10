@@ -4,6 +4,94 @@
 #include <stdlib.h>
 #include <string.h>
 
+void enchain_block(block_t *block)
+{
+    uint8_t block_hash[SIZE_SHA256];
+    block_compute_hash(block, block_hash);
+    
+    uint32_t head_count = io_head_count();
+    if (head_count == 0)
+        return;
+    head_t heads[head_count];
+    io_head_load_all(heads);
+    
+    block_header_t header_buffer;
+    uint8_t hash_buffer[SIZE_SHA256];
+    
+    // Check that the block exists
+    if (!io_load_block_header(block_hash, &header_buffer))
+        goto finalize;
+    
+    // Check that the block isn't already enchained
+    for (int i=0; i<head_count; i++)
+    {
+        memcpy(hash_buffer, heads[i].hash, SIZE_SHA256);
+        while (1)
+        {
+            if (!io_load_block_header(hash_buffer, &header_buffer))
+                break;
+            if (memcmp(hash_buffer, block_hash, SIZE_SHA256) == 0)
+                goto finalize;
+            if (header_buffer.height == 0)
+                break;
+            memcpy(hash_buffer, header_buffer.prev_hash, SIZE_SHA256);
+        }
+    }
+    
+    // Check if block can be appended to a head
+    for (int i=0; i<head_count; i++)
+    {
+        if (memcmp(block->header.prev_hash, heads[i].hash, SIZE_SHA256) == 0)
+        {
+            heads[i].height++;
+            memcpy(heads[i].hash, block_hash, SIZE_SHA256);
+            io_head_update(&heads[i]);
+            goto finalize;
+        }
+    }
+    // Create a new head for this block
+    head_t newhead;
+    newhead.chained = 0;
+    memcpy(newhead.hash, block_hash, SIZE_SHA256);
+    newhead.height = block->header.height;
+    
+    finalize:
+    chain_clean();
+}
+
+void chain_clean()
+{
+    uint32_t head_count = io_head_count();
+    head_t heads[head_count];
+    io_head_load_all(heads);
+    
+    block_header_t header_buffer;
+    uint8_t hash_buffer[SIZE_SHA256];
+    
+    
+    // Remove dead heads
+    for (int i=0; i<head_count; i++)
+    {
+        memcpy(hash_buffer, heads[i].hash, SIZE_SHA256);
+        while (1)
+        {
+            if (!io_load_block_header(hash_buffer, &header_buffer))
+                break;
+            for (int k=0; k<head_count; k++)
+                if ((k != i) && (memcmp(hash_buffer, heads[k].hash, SIZE_SHA256) == 0))
+                    io_head_delete(hash_buffer);
+            if (header_buffer.height == 0)
+                break;
+            memcpy(hash_buffer, header_buffer.prev_hash, SIZE_SHA256);
+        }
+    }
+    // Remove stale heads
+    // TODO
+    
+    // Remove blocks not pointed to by heads
+    // TODO
+}
+
 block_t *m_gen_genesis_block()
 {
     uint8_t genesis_prev[] = GENESIS_PREV;
@@ -20,6 +108,7 @@ block_t *m_gen_genesis_block()
     
     return block;
 }
+
 
 // TODO verify this works correctly
 void compute_next_target(block_t *block_b, uint8_t *next_target)

@@ -5,6 +5,7 @@
 #include "fs.h"
 #include "secrets.h"
 #include "sha256.h"
+#include "chain.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,27 +32,21 @@ void io_init()
     DIR_KEYS        = m_strconcat(2, ROOT_FREECOIN, "/keys/");
 }
 
+/*********
+ * HEADS *
+ *********/
 
-/*** HEADS ***/
-typedef struct
-{
-    uint32_t height;
-    uint8_t chained;
-    uint8_t hash[32];
-} head_t;
+uint32_t io_head_count();
 
-/* Remove dead heads and stale heads/blocks */
-void intern_chain_clean();
+void io_head_load_all(head_t *dst);
 
-head_t *m_intern_chain_load_all_heads(uint32_t *dst_count);
+void io_head_load(uint8_t *hash, head_t *dst);
 
-void intern_chain_load_head(uint8_t *hash, head_t *dst);
+void io_head_create(uint8_t *hash);
 
-void intern_chain_create_head(uint8_t *hash);
+void io_head_delete(uint8_t *hash);
 
-void intern_chain_delete_head(uint8_t *hash);
-
-void intern_chain_update_head(head_t *head);
+void io_head_update(head_t *head);
 
 
 /* HASHLISTS */
@@ -87,29 +82,31 @@ int64_t intern_hashlist_getindex(uint8_t *hash, char *path)
     return retval;
 }
 
-void intern_hashlist_get(uint64_t height, uint8_t *dst, char *path)
+BOOL intern_hashlist_get(uint64_t height, uint8_t *dst, char *path)
 {
     FILE *f;
 
     f = fopen(path, "rb");
     if (!f)
-        fatal("Failed to open file in intern_find_hash()");
+        return FALSE;
     
     fseek(f, height*SIZE_SHA256, SEEK_SET);
     
     fread(dst,SIZE_SHA256,1,f);
     
     fclose(f);
+    return TRUE;
 }
 
-void intern_hashlist_add(uint8_t *hash, char *path)
+BOOL intern_hashlist_add(uint8_t *hash, char *path)
 {
     FILE *f = fopen(path, "ab");
     if (!f)
-        fatal("Failed to open file in intern_hash add()");
+        return FALSE;
     fwrite(hash,SIZE_SHA256,1,f);
     
     fclose(f);
+    return TRUE;
 }
 
 /****************
@@ -118,31 +115,33 @@ void intern_hashlist_add(uint8_t *hash, char *path)
 
 tx_t *m_io_load_tx(uint8_t *hash)
 {
+    tx_t *tx = NULL;
     uint8_t *buffer = malloc(MAX_TX_SIZE);
-    io_load_tx_raw(hash, buffer);
-    tx_t *tx = m_tx_deserialize(buffer);
+    if (io_load_tx_raw(hash, buffer))
+        tx = m_tx_deserialize(buffer);
     
     free(buffer);
     return tx;
 }
 
-void io_load_tx_raw(uint8_t *tx_hash_src, uint8_t *dst)
+BOOL io_load_tx_raw(uint8_t *tx_hash_src, uint8_t *dst)
 {
-    uint8_t *block_hash = malloc(SIZE_SHA256);
+    uint8_t block_hash[SIZE_SHA256];
     int pos = io_block_of_tx(tx_hash_src, block_hash);
     if (pos < 0)
-        fatal("Attempted to load tx without first checking existence with io_block_of_tx()");
+        return FALSE;
 
     io_load_nth_tx_raw(block_hash, pos, dst);
-    free(block_hash);
+    return TRUE;
 }
 
 // Util
 
-void io_load_nth_tx_raw(uint8_t *block_hash, uint32_t n, uint8_t *dst)
+BOOL io_load_nth_tx_raw(uint8_t *block_hash, uint32_t n, uint8_t *dst)
 {
-    uint8_t *block_buffer = malloc(MAX_BLOCK_SIZE);
-    io_load_block_raw(block_hash, block_buffer);
+    uint8_t block_buffer[MAX_BLOCK_SIZE];
+    if (!io_load_block_raw(block_hash, block_buffer))
+        return FALSE;
     
     // Check for sanity
     if (n >= btoui(&block_buffer[POS_BLOCK_HEADER_TX_COUNT]))
@@ -156,7 +155,7 @@ void io_load_nth_tx_raw(uint8_t *block_hash, uint32_t n, uint8_t *dst)
     
     memcpy(dst, &block_buffer[cursor], tx_raw_compute_size(&block_buffer[cursor]));
     
-    free(block_buffer);
+    return TRUE;
 }
 
 int io_block_of_tx(uint8_t *src_tx_hash, uint8_t *dst_block_hash)
@@ -189,26 +188,33 @@ int io_block_of_tx(uint8_t *src_tx_hash, uint8_t *dst_block_hash)
  * BLOCKS *
  **********/
 
-void io_load_block_header(uint8_t *hash, block_header_t *dst)
+BOOL io_load_block_header(uint8_t *hash, block_header_t *dst)
 {
+    BOOL retval = FALSE;
     uint8_t *buffer = malloc(MAX_BLOCK_SIZE);
-    io_load_block_raw(hash, buffer);
-    block_header_deserialize(buffer, dst);
+    if (io_load_block_raw(hash, buffer))
+    {
+        block_header_deserialize(buffer, dst);
+        retval = TRUE;
+    }
     free(buffer);
+    return retval;
 }
 
 block_t *m_io_load_block(uint8_t *hash)
 {
+    block_t *block = NULL;
     uint8_t *buffer = malloc(MAX_BLOCK_SIZE);
-    io_load_block_raw(hash, buffer);
-    block_t *block = m_block_deserialize(buffer);
+    if (io_load_block_raw(hash, buffer))
+        block = m_block_deserialize(buffer);
     
     free(buffer);
     return block;
 }
 
-void io_load_block_raw(uint8_t *block_hash, uint8_t *dst)
+BOOL io_load_block_raw(uint8_t *block_hash, uint8_t *dst)
 {
+    BOOL retval = FALSE;
     char block_hash_ascii[SIZE_SHA256*2+1];
     btoascii(block_hash_ascii, block_hash, SIZE_SHA256);
     char *block_file_name = m_strconcat(3, DIR_BLOCKS,"/",block_hash_ascii);
@@ -217,15 +223,18 @@ void io_load_block_raw(uint8_t *block_hash, uint8_t *dst)
     long file_len;
 
     f = fopen(block_file_name, "rb");
-    if (!f)
-        fatal("Attempted to open nonexistent block without first checking existence with io_height_of_block()");
-    fseek(f, 0, SEEK_END);
-    file_len = ftell(f);
-    rewind(f);
-
-    fread(dst, file_len, 1, f);
-    fclose(f);
+    if (f)
+    {
+        fseek(f, 0, SEEK_END);
+        file_len = ftell(f);
+        rewind(f);
+        
+        fread(dst, file_len, 1, f);
+        fclose(f);
+        retval = TRUE;
+    }
     free(block_file_name);
+    return retval;
 }
 
 void io_save_block(block_t *src)
@@ -247,6 +256,8 @@ void io_save_block_raw(uint8_t *src)
     
     FILE *f;
     f = fopen(block_file_name, "wb");
+    if (!f)
+        fatal("Failed to open file in io_save_block_raw()");
     
     fwrite(src, block_size, 1, f);
     
@@ -267,50 +278,10 @@ void io_save_block_raw(uint8_t *src)
     }
     fclose(f);
     
-    /* Head management */
-    block_header_t block_header;
-    block_header_deserialize(&src[POS_BLOCK_HEADER], &block_header);
-    uint32_t head_count;
-    head_t *heads = m_intern_chain_load_all_heads(&head_count);
+    block_t *block = m_block_deserialize(src);
+    enchain_block(block);
     
-    // Check if block can be appended to a head
-    for (int i=0; i<head_count; i++)
-    {
-        if (memcmp(block_header.merkle_root, heads[i].hash, SIZE_SHA256) == 0)
-        {
-            heads[i].height++;
-            memcpy(heads[i].hash, block_hash, SIZE_SHA256);
-            intern_chain_update_head(&heads[i]);
-            goto end;
-        }
-    }
-    // Check if the block is backreferenced by a non-fully-chained head
-    block_header_t temp_header;
-    uint8_t *curr_hash = malloc(SIZE_SHA256);
-    for (int i=0; i<head_count; i++)
-    {
-        if (heads[i].chained == 0)
-        {
-            memcpy(curr_hash, heads[i].hash, SIZE_SHA256);
-            while (1)
-            {
-                io_load_block_header(curr_hash, &temp_header);
-                if (memcmp(temp_header.prev_hash, block_hash, SIZE_SHA256) == 0)
-                    goto end;
-            }
-        }
-    }
-    // Create a new head for this block
-    head_t newhead;
-    newhead.chained = 0;
-    memcpy(newhead.hash, block_hash, SIZE_SHA256);
-    newhead.height = block_header.height;
-    
-    intern_chain_clean();
-    
-    end:
-    free(heads);
-    free(curr_hash);
+    m_free_block(block);
     free(hash_buffer);
     free(block_file_name);
     free(txindex_file_name);

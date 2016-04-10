@@ -15,6 +15,9 @@
 #define SECONDS_IN_HALF_WEEK 5040
 #define SECONDS_IN_8_WEEKS 80640
 
+void enchain_block(block_t *block);
+void chain_clean();
+
 block_t *m_genesis_block();
 
 void compute_next_target(block_t *block_b, uint8_t *next_target);
