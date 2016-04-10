@@ -11,6 +11,10 @@
 #include <freecoin/sha256.h>
 #include <freecoin/bignum.h>
 
+void test_chain()
+{
+    
+}
 
 void test_io()
 {
