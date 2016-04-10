@@ -11,23 +11,15 @@
  *      somefield: fieldsize (ASSERTIONS)...
  * * All caps field means it represents something non-ordinal.
  */
-
+#include <stddef.h>
 #include <freecoin/shared.h>
-
 #include "threads/connection.h"
 
-
-void handle_reject(uint8_t *buffer, uint32_t size, peer_t *peer)
-{
-    
-}
-
-
-/* reject
+/* reject [variable]
  * ERRORTYPE: 1 
  * info: size-1
  */
-void handle_reject(uint8_t *buffer, uint32_t size, peer_t *peer)
+void handle_reject(uint8_t *buffer, uint16_t size, peer_t *peer)
 {
     if (size < 1)
     {
@@ -40,13 +32,13 @@ void handle_reject(uint8_t *buffer, uint32_t size, peer_t *peer)
     //       "Info bytes: ") TODO
 }
 
-/* getblocks
+/* getblocks [fixed]
  * start: 32
  * consecutive: 1
  */
-void handle_getblocks(uint8_t *buffer, uint32_t size, peer_t *peer)
+void handle_getblocks(uint8_t *buffer, uint16_t size, peer_t *peer)
 {
-    if (size != FIXED_SIZE_GETBLOCKS)
+    if (size != 32+1)
     {
         //TODO send rejection malformed message
         return;
@@ -55,44 +47,45 @@ void handle_getblocks(uint8_t *buffer, uint32_t size, peer_t *peer)
     uint8_t *raw = m_build_inv_blocks(&buffer[0], &buffer[32]);
     if (raw == NULL)
         return;
-    msgqueue_enqueue(peer->sendqueue, raw, btoui(raw), 0, peer);
+    msgqueue_enqueue(peer->sendqueue, raw, btous(raw), 0, peer);
     free(raw);
 }
 
-/* gettxs
+/* gettxs [fixed]
  * nil
  */
-void handle_gettxs(uint8_t *buffer, uint32_t size, peer_t *peer)
+void handle_gettxs(uint8_t *buffer, uint16_t size, peer_t *peer)
 {
     uint8_t *raw = m_build_inv_txs();
     if (raw == NULL)
         return;
-    msgqueue_enqueue(peer->sendqueue, raw, btoui(raw), 0, peer);
+    msgqueue_enqueue(peer->sendqueue, raw, btous(raw), 0, peer);
     free(raw);
 }
 
-/* inv
+/* inv [variable]
  * DATATYPE: 1
- * ids: size-1 ((size-1) % 32 == 0)
+ * count: 1
+ * ids: 32*count
  */
-void handle_inv(uint8_t *buffer, uint32_t size, peer_t *peer)
+void handle_inv(uint8_t *buffer, uint16_t size, peer_t *peer)
 {
-    if (size < 33 || (size-1) % 32 != 0)
+    uint8_t count = btous(&buffer[1]);
+    if (size-2 != count*SIZE_SHA256)
     {
         //TODO send rejection malformed message
         return;
     }
-    uint8_t *missing_hashes = malloc(SIZE_SHA256*size);
+    uint8_t *missing_hashes = malloc(SIZE_SHA256*count);
     uint8_t missing_hashesc = 0;
-    uint8_t count = (size-1)/32;
     uint8_t *curr_hash;
     for (int i=0; i<count; i++)
     {
-        curr_hash = &buffer[1+i*32];
+        curr_hash = &buffer[2+i*SIZE_SHA256];
         if ((buffer[0] == DTYPE_BLOCK) && !io_is_block(curr_hash)||
             (buffer[0] == DTYPE_TX)    && !mempool_contains(curr_hash))
         {
-            memcpy(missing_hashes[missing_hashesc*32], curr_hash, SIZE_SHA256);
+            memcpy(missing_hashes[missing_hashesc*SIZE_SHA256, curr_hash, SIZE_SHA256);
             missing_hashesc++;
         }
     }
@@ -100,16 +93,52 @@ void handle_inv(uint8_t *buffer, uint32_t size, peer_t *peer)
     free(missing_hashes);
     if (raw == NULL)
         return;
-    msgqueue_enqueue(peer->sendqueue, raw, btoui(raw), 0, peer);
+    msgqueue_enqueue(peer->sendqueue, raw, btous(raw), 0, peer);
     free(m_build_getdata);
 }
 
 /* getdata
+ * DATATYPE: 1
+ * count: 1
+ * ids: 32*count
  */
-void handle_(uint8_t *buffer, uint32_t size, peer_t *peer)
+void handle_getdata(uint8_t *buffer, uint16_t size, peer_t *peer)
+{
+    uint8_t *raw;
+    if (buffer[0] == DTYPE_PEER)
+        ;//TODO
+    
+    uint8_t count = btous(&buffer[1]);
+    if (size-2 != count*SIZE_SHA256)
+    {
+        //TODO send rejection malformed message
+        return;
+    }
+    uint8_t *curr_hash;
+    for (int i=0; i<count; i++)
+    {
+        curr_hash = &buffer[2+i*SIZE_SHA256];
+        if (buffer[0] == DTYPE_BLOCK)
+            raw = m_build_block(curr_hash);
+        else if (buffer[0] == DTYPE_TX)
+            raw = m_build_tx(curr_hash);
+        if (raw == NULL)
+            continue;
+        else
+        {
+            msgqueue_enqueue(peer->sendqueue, raw, btous(raw), peer);
+            free(raw);
+        }
+    }
+}
+
+/* 
+ */
+void handle_block(uint8_t *buffer, uint32_t size, peer_t *peer)
 {
     
 }
+
 
 /* 
  */
