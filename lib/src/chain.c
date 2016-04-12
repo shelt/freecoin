@@ -111,25 +111,26 @@ block_t *m_gen_genesis_block()
 
 
 // TODO verify this works correctly
-void compute_next_target(block_t *block_b, uint8_t *next_target)
+uint8_t chain_compute_next_target(block_header_t *header_b, uint8_t *next_target)
 {
     uint16_t retval;
     uint8_t *hash_buffer_1 = malloc(SIZE_SHA256);
     uint8_t *hash_buffer_2 = malloc(SIZE_SHA256);
     uint8_t *hash_buffer_3 = malloc(SIZE_SHA256);
     
-    block_t *block_a;
+    block_header_t *header_a;
     
-    if (block_b->header.height < CHAIN_RECALC_INTERVAL)
+    if (header_b->height < CHAIN_RECALC_INTERVAL)
     {
-        memcpy(next_target, block_b->header.target, 2);
+        memcpy(next_target, header_b->target, 2);
     }
-    else if ((block_b->header.height % CHAIN_RECALC_INTERVAL) == 0)
+    else if ((header_b->height % CHAIN_RECALC_INTERVAL) == 0)
     {
-        io_block_at_height(block_b->header.height - CHAIN_RECALC_INTERVAL, hash_buffer_1);
-        block_a = m_io_load_block(hash_buffer_1);
+        //TODO this function no longer exists
+        io_block_at_height(header_b->height - CHAIN_RECALC_INTERVAL, hash_buffer_1);
+        header_a = m_io_load_block(hash_buffer_1);
         
-        uint32_t diff = block_b->header.time - block_a->header.time;
+        uint32_t diff = header_b->time - header_a->time;
         // upper bound (4x)
         if (diff > SECONDS_IN_8_WEEKS)
             diff = SECONDS_IN_8_WEEKS;
@@ -146,7 +147,7 @@ void compute_next_target(block_t *block_b, uint8_t *next_target)
         bignum3.size = 32;
         
         // Multiply diff and current target
-        target_to_btarget(block_b->header.target, bignum1);
+        target_to_btarget(header_b->target, bignum1);
         big_uitobig(diff, bignum2);
         big_mult(bignum1, bignum2, bignum3);
         
@@ -154,7 +155,7 @@ void compute_next_target(block_t *block_b, uint8_t *next_target)
         big_div(bignum3, 2, bignum1);
         
         btarget_to_target(bignum1, next_target);  // Return value copied here
-        free(block_a);
+        free(header_a);
     }
     
     free(hash_buffer_1);

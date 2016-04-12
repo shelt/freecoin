@@ -288,7 +288,9 @@ void io_save_block_raw(uint8_t *src)
     free(block_hash);
 }
 
-/****** KEYS ******/
+/**********
+ *  KEYS  *
+ **********/
 
 void io_store_key(uint8_t *pub, uint8_t *priv)
 {

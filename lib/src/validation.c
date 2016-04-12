@@ -86,7 +86,7 @@ uint8_t validate_block_chain(block_t *block)
             bignum_t big_target_this;
             big_target_true.size = SIZE_SHA256;
             big_target_true.data = hash_buffer_1;
-            compute_next_target(block, big_target_true.data);
+            chain_compute_next_target(block, big_target_true.data);
             
             big_target_this.size = SIZE_SHA256;
             big_target_this.data = hash_buffer_2;
