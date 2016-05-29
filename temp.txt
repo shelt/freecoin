@@ -1,0 +1,1110 @@
+make -C lib
+make[1]: Entering directory '/home/sam/git/freecoin/lib'
+mkdir -p build lib
+cd src && find -type d -exec mkdir -p "../build/{}" \;
+gcc -c src/./io.c -o build/./io.o -Wall -std=c99 -lpthread -Iinclude -Wno-unused-variable
+In file included from /usr/include/stdio.h:35:0,
+                 from src/./io.c:9:
+/usr/include/bits/types.h: In function ‘chain_compute_next_target’:
+/usr/include/bits/types.h:30:23: error: storage class specified for parameter ‘__u_char’
+ typedef unsigned char __u_char;
+                       ^~~~~~~~
+/usr/include/bits/types.h:31:28: error: storage class specified for parameter ‘__u_short’
+ typedef unsigned short int __u_short;
+                            ^~~~~~~~~
+/usr/include/bits/types.h:32:22: error: storage class specified for parameter ‘__u_int’
+ typedef unsigned int __u_int;
+                      ^~~~~~~
+/usr/include/bits/types.h:33:27: error: storage class specified for parameter ‘__u_long’
+ typedef unsigned long int __u_long;
+                           ^~~~~~~~
+/usr/include/bits/types.h:36:21: error: storage class specified for parameter ‘__int8_t’
+ typedef signed char __int8_t;
+                     ^~~~~~~~
+/usr/include/bits/types.h:37:23: error: storage class specified for parameter ‘__uint8_t’
+ typedef unsigned char __uint8_t;
+                       ^~~~~~~~~
+/usr/include/bits/types.h:38:26: error: storage class specified for parameter ‘__int16_t’
+ typedef signed short int __int16_t;
+                          ^~~~~~~~~
+/usr/include/bits/types.h:39:28: error: storage class specified for parameter ‘__uint16_t’
+ typedef unsigned short int __uint16_t;
+                            ^~~~~~~~~~
+/usr/include/bits/types.h:40:20: error: storage class specified for parameter ‘__int32_t’
+ typedef signed int __int32_t;
+                    ^~~~~~~~~
+/usr/include/bits/types.h:41:22: error: storage class specified for parameter ‘__uint32_t’
+ typedef unsigned int __uint32_t;
+                      ^~~~~~~~~~
+/usr/include/bits/types.h:43:25: error: storage class specified for parameter ‘__int64_t’
+ typedef signed long int __int64_t;
+                         ^~~~~~~~~
+/usr/include/bits/types.h:44:27: error: storage class specified for parameter ‘__uint64_t’
+ typedef unsigned long int __uint64_t;
+                           ^~~~~~~~~~
+/usr/include/bits/types.h:52:18: error: storage class specified for parameter ‘__quad_t’
+ typedef long int __quad_t;
+                  ^~~~~~~~
+/usr/include/bits/types.h:53:27: error: storage class specified for parameter ‘__u_quad_t’
+ typedef unsigned long int __u_quad_t;
+                           ^~~~~~~~~~
+In file included from /usr/include/stdio.h:35:0,
+                 from src/./io.c:9:
+/usr/include/bits/types.h:124:25: error: storage class specified for parameter ‘__dev_t’
+ __STD_TYPE __DEV_T_TYPE __dev_t; /* Type of device numbers.  */
+                         ^~~~~~~
+/usr/include/bits/types.h:125:25: error: storage class specified for parameter ‘__uid_t’
+ __STD_TYPE __UID_T_TYPE __uid_t; /* Type of user identifications.  */
+                         ^~~~~~~
+/usr/include/bits/types.h:126:25: error: storage class specified for parameter ‘__gid_t’
+ __STD_TYPE __GID_T_TYPE __gid_t; /* Type of group identifications.  */
+                         ^~~~~~~
+/usr/include/bits/types.h:127:25: error: storage class specified for parameter ‘__ino_t’
+ __STD_TYPE __INO_T_TYPE __ino_t; /* Type of file serial numbers.  */
+                         ^~~~~~~
+/usr/include/bits/types.h:128:27: error: storage class specified for parameter ‘__ino64_t’
+ __STD_TYPE __INO64_T_TYPE __ino64_t; /* Type of file serial numbers (LFS).*/
+                           ^~~~~~~~~
+/usr/include/bits/types.h:129:26: error: storage class specified for parameter ‘__mode_t’
+ __STD_TYPE __MODE_T_TYPE __mode_t; /* Type of file attribute bitmasks.  */
+                          ^~~~~~~~
+/usr/include/bits/types.h:130:27: error: storage class specified for parameter ‘__nlink_t’
+ __STD_TYPE __NLINK_T_TYPE __nlink_t; /* Type of file link counts.  */
+                           ^~~~~~~~~
+/usr/include/bits/types.h:131:25: error: storage class specified for parameter ‘__off_t’
+ __STD_TYPE __OFF_T_TYPE __off_t; /* Type of file sizes and offsets.  */
+                         ^~~~~~~
+/usr/include/bits/types.h:132:27: error: storage class specified for parameter ‘__off64_t’
+ __STD_TYPE __OFF64_T_TYPE __off64_t; /* Type of file sizes and offsets (LFS).  */
+                           ^~~~~~~~~
+/usr/include/bits/types.h:133:25: error: storage class specified for parameter ‘__pid_t’
+ __STD_TYPE __PID_T_TYPE __pid_t; /* Type of process identifications.  */
+                         ^~~~~~~
+/usr/include/bits/types.h:134:26: error: storage class specified for parameter ‘__fsid_t’
+ __STD_TYPE __FSID_T_TYPE __fsid_t; /* Type of file system IDs.  */
+                          ^~~~~~~~
+/usr/include/bits/types.h:135:27: error: storage class specified for parameter ‘__clock_t’
+ __STD_TYPE __CLOCK_T_TYPE __clock_t; /* Type of CPU usage counts.  */
+                           ^~~~~~~~~
+/usr/include/bits/types.h:136:26: error: storage class specified for parameter ‘__rlim_t’
+ __STD_TYPE __RLIM_T_TYPE __rlim_t; /* Type for resource measurement.  */
+                          ^~~~~~~~
+/usr/include/bits/types.h:137:28: error: storage class specified for parameter ‘__rlim64_t’
+ __STD_TYPE __RLIM64_T_TYPE __rlim64_t; /* Type for resource measurement (LFS).  */
+                            ^~~~~~~~~~
+/usr/include/bits/types.h:138:24: error: storage class specified for parameter ‘__id_t’
+ __STD_TYPE __ID_T_TYPE __id_t;  /* General type for IDs.  */
+                        ^~~~~~
+/usr/include/bits/types.h:139:26: error: storage class specified for parameter ‘__time_t’
+ __STD_TYPE __TIME_T_TYPE __time_t; /* Seconds since the Epoch.  */
+                          ^~~~~~~~
+/usr/include/bits/types.h:140:30: error: storage class specified for parameter ‘__useconds_t’
+ __STD_TYPE __USECONDS_T_TYPE __useconds_t; /* Count of microseconds.  */
+                              ^~~~~~~~~~~~
+/usr/include/bits/types.h:141:31: error: storage class specified for parameter ‘__suseconds_t’
+ __STD_TYPE __SUSECONDS_T_TYPE __suseconds_t; /* Signed count of microseconds.  */
+                               ^~~~~~~~~~~~~
+/usr/include/bits/types.h:143:27: error: storage class specified for parameter ‘__daddr_t’
+ __STD_TYPE __DADDR_T_TYPE __daddr_t; /* The type of a disk address.  */
+                           ^~~~~~~~~
+/usr/include/bits/types.h:144:25: error: storage class specified for parameter ‘__key_t’
+ __STD_TYPE __KEY_T_TYPE __key_t; /* Type of an IPC key.  */
+                         ^~~~~~~
+/usr/include/bits/types.h:147:29: error: storage class specified for parameter ‘__clockid_t’
+ __STD_TYPE __CLOCKID_T_TYPE __clockid_t;
+                             ^~~~~~~~~~~
+/usr/include/bits/types.h:150:27: error: storage class specified for parameter ‘__timer_t’
+ __STD_TYPE __TIMER_T_TYPE __timer_t;
+                           ^~~~~~~~~
+/usr/include/bits/types.h:153:29: error: storage class specified for parameter ‘__blksize_t’
+ __STD_TYPE __BLKSIZE_T_TYPE __blksize_t;
+                             ^~~~~~~~~~~
+/usr/include/bits/types.h:158:28: error: storage class specified for parameter ‘__blkcnt_t’
+ __STD_TYPE __BLKCNT_T_TYPE __blkcnt_t;
+                            ^~~~~~~~~~
+/usr/include/bits/types.h:159:30: error: storage class specified for parameter ‘__blkcnt64_t’
+ __STD_TYPE __BLKCNT64_T_TYPE __blkcnt64_t;
+                              ^~~~~~~~~~~~
+/usr/include/bits/types.h:162:30: error: storage class specified for parameter ‘__fsblkcnt_t’
+ __STD_TYPE __FSBLKCNT_T_TYPE __fsblkcnt_t;
+                              ^~~~~~~~~~~~
+/usr/include/bits/types.h:163:32: error: storage class specified for parameter ‘__fsblkcnt64_t’
+ __STD_TYPE __FSBLKCNT64_T_TYPE __fsblkcnt64_t;
+                                ^~~~~~~~~~~~~~
+/usr/include/bits/types.h:166:30: error: storage class specified for parameter ‘__fsfilcnt_t’
+ __STD_TYPE __FSFILCNT_T_TYPE __fsfilcnt_t;
+                              ^~~~~~~~~~~~
+/usr/include/bits/types.h:167:32: error: storage class specified for parameter ‘__fsfilcnt64_t’
+ __STD_TYPE __FSFILCNT64_T_TYPE __fsfilcnt64_t;
+                                ^~~~~~~~~~~~~~
+/usr/include/bits/types.h:170:28: error: storage class specified for parameter ‘__fsword_t’
+ __STD_TYPE __FSWORD_T_TYPE __fsword_t;
+                            ^~~~~~~~~~
+/usr/include/bits/types.h:172:27: error: storage class specified for parameter ‘__ssize_t’
+ __STD_TYPE __SSIZE_T_TYPE __ssize_t; /* Type of a byte count, or error.  */
+                           ^~~~~~~~~
+/usr/include/bits/types.h:175:33: error: storage class specified for parameter ‘__syscall_slong_t’
+ __STD_TYPE __SYSCALL_SLONG_TYPE __syscall_slong_t;
+                                 ^~~~~~~~~~~~~~~~~
+/usr/include/bits/types.h:177:33: error: storage class specified for parameter ‘__syscall_ulong_t’
+ __STD_TYPE __SYSCALL_ULONG_TYPE __syscall_ulong_t;
+                                 ^~~~~~~~~~~~~~~~~
+/usr/include/bits/types.h:181:19: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘__loff_t’
+ typedef __off64_t __loff_t; /* Type of file sizes and offsets (LFS).  */
+                   ^~~~~~~~
+/usr/include/bits/types.h:182:18: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+ typedef __quad_t *__qaddr_t;
+                  ^
+/usr/include/bits/types.h:183:15: error: storage class specified for parameter ‘__caddr_t’
+ typedef char *__caddr_t;
+               ^~~~~~~~~
+/usr/include/bits/types.h:186:25: error: storage class specified for parameter ‘__intptr_t’
+ __STD_TYPE __SWORD_TYPE __intptr_t;
+                         ^~~~~~~~~~
+/usr/include/bits/types.h:189:23: error: storage class specified for parameter ‘__socklen_t’
+ __STD_TYPE __U32_TYPE __socklen_t;
+                       ^~~~~~~~~~~
+In file included from src/./io.c:9:0:
+/usr/include/stdio.h:48:25: error: storage class specified for parameter ‘FILE’
+ typedef struct _IO_FILE FILE;
+                         ^~~~
+/usr/include/stdio.h:64:25: error: storage class specified for parameter ‘__FILE’
+ typedef struct _IO_FILE __FILE;
+                         ^~~~~~
+In file included from /usr/include/_G_config.h:20:0,
+                 from /usr/include/libio.h:31,
+                 from /usr/include/stdio.h:74,
+                 from src/./io.c:9:
+/usr/include/wchar.h:94:3: error: storage class specified for parameter ‘__mbstate_t’
+ } __mbstate_t;
+   ^~~~~~~~~~~
+In file included from /usr/include/libio.h:31:0,
+                 from /usr/include/stdio.h:74,
+                 from src/./io.c:9:
+/usr/include/_G_config.h:23:3: error: expected specifier-qualifier-list before ‘__off_t’
+   __off_t __pos;
+   ^~~~~~~
+/usr/include/_G_config.h:25:3: error: storage class specified for parameter ‘_G_fpos_t’
+ } _G_fpos_t;
+   ^~~~~~~~~
+/usr/include/_G_config.h:28:3: error: expected specifier-qualifier-list before ‘__off64_t’
+   __off64_t __pos;
+   ^~~~~~~~~
+/usr/include/_G_config.h:30:3: error: storage class specified for parameter ‘_G_fpos64_t’
+ } _G_fpos64_t;
+   ^~~~~~~~~~~
+In file included from /usr/include/libio.h:49:0,
+                 from /usr/include/stdio.h:74,
+                 from src/./io.c:9:
+/usr/lib/gcc/x86_64-pc-linux-gnu/6.1.1/include/stdarg.h:40:27: error: storage class specified for parameter ‘__gnuc_va_list’
+ typedef __builtin_va_list __gnuc_va_list;
+                           ^~~~~~~~~~~~~~
+In file included from /usr/include/stdio.h:74:0,
+                 from src/./io.c:9:
+/usr/include/libio.h:150:14: error: storage class specified for parameter ‘_IO_lock_t’
+ typedef void _IO_lock_t;
+              ^~~~~~~~~~
+In file included from /usr/include/stdio.h:74:0,
+                 from src/./io.c:9:
+/usr/include/libio.h:270:3: error: expected specifier-qualifier-list before ‘__off_t’
+   _IO_off_t _old_offset; /* This used to be _offset but it's too small.  */
+   ^
+In file included from /usr/include/stdio.h:74:0,
+                 from src/./io.c:9:
+/usr/include/libio.h:310:25: error: storage class specified for parameter ‘_IO_FILE’
+ typedef struct _IO_FILE _IO_FILE;
+                         ^~~~~~~~
+/usr/include/libio.h:315:29: error: storage class specified for parameter ‘_IO_2_1_stdin_’
+ extern struct _IO_FILE_plus _IO_2_1_stdin_;
+                             ^~~~~~~~~~~~~~
+/usr/include/libio.h:316:29: error: storage class specified for parameter ‘_IO_2_1_stdout_’
+ extern struct _IO_FILE_plus _IO_2_1_stdout_;
+                             ^~~~~~~~~~~~~~~
+/usr/include/libio.h:317:29: error: storage class specified for parameter ‘_IO_2_1_stderr_’
+ extern struct _IO_FILE_plus _IO_2_1_stderr_;
+                             ^~~~~~~~~~~~~~~
+/usr/include/libio.h:333:19: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘__io_read_fn’
+ typedef __ssize_t __io_read_fn (void *__cookie, char *__buf, size_t __nbytes);
+                   ^~~~~~~~~~~~
+/usr/include/libio.h:341:19: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘__io_write_fn’
+ typedef __ssize_t __io_write_fn (void *__cookie, const char *__buf,
+                   ^~~~~~~~~~~~~
+In file included from /usr/include/stdio.h:74:0,
+                 from src/./io.c:9:
+/usr/include/libio.h:350:43: error: expected declaration specifiers or ‘...’ before ‘__off64_t’
+ typedef int __io_seek_fn (void *__cookie, _IO_off64_t *__pos, int __w);
+                                           ^
+In file included from /usr/include/stdio.h:74:0,
+                 from src/./io.c:9:
+/usr/include/libio.h:353:13: error: storage class specified for parameter ‘__io_close_fn’
+ typedef int __io_close_fn (void *__cookie);
+             ^~~~~~~~~~~~~
+/usr/include/libio.h:385:25: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern int __underflow (_IO_FILE *);
+                         ^~~~~~~~
+/usr/include/libio.h:386:21: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern int __uflow (_IO_FILE *);
+                     ^~~~~~~~
+/usr/include/libio.h:387:24: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern int __overflow (_IO_FILE *, int);
+                        ^~~~~~~~
+/usr/include/libio.h:429:22: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern int _IO_getc (_IO_FILE *__fp);
+                      ^~~~~~~~
+/usr/include/libio.h:430:31: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern int _IO_putc (int __c, _IO_FILE *__fp);
+                               ^~~~~~~~
+/usr/include/libio.h:431:22: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern int _IO_feof (_IO_FILE *__fp) __THROW;
+                      ^~~~~~~~
+/usr/include/libio.h:432:24: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern int _IO_ferror (_IO_FILE *__fp) __THROW;
+                        ^~~~~~~~
+/usr/include/libio.h:434:30: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern int _IO_peekc_locked (_IO_FILE *__fp);
+                              ^~~~~~~~
+/usr/include/libio.h:440:28: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern void _IO_flockfile (_IO_FILE *) __THROW;
+                            ^~~~~~~~
+/usr/include/libio.h:441:30: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern void _IO_funlockfile (_IO_FILE *) __THROW;
+                              ^~~~~~~~
+/usr/include/libio.h:442:30: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern int _IO_ftrylockfile (_IO_FILE *) __THROW;
+                              ^~~~~~~~
+/usr/include/libio.h:459:25: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern int _IO_vfscanf (_IO_FILE * __restrict, const char * __restrict,
+                         ^~~~~~~~
+/usr/include/libio.h:460:4: error: expected declaration specifiers or ‘...’ before ‘__gnuc_va_list’
+    _IO_va_list, int *__restrict);
+    ^
+/usr/include/libio.h:461:26: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern int _IO_vfprintf (_IO_FILE *__restrict, const char *__restrict,
+                          ^~~~~~~~
+/usr/include/libio.h:462:5: error: expected declaration specifiers or ‘...’ before ‘__gnuc_va_list’
+     _IO_va_list);
+     ^
+/usr/include/libio.h:463:20: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘_IO_padn’
+ extern _IO_ssize_t _IO_padn (_IO_FILE *, int, _IO_ssize_t);
+                    ^~~~~~~~
+/usr/include/libio.h:464:30: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern _IO_size_t _IO_sgetn (_IO_FILE *, void *, _IO_size_t);
+                              ^~~~~~~~
+/usr/include/libio.h:466:20: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘_IO_seekoff’
+ extern _IO_off64_t _IO_seekoff (_IO_FILE *, _IO_off64_t, int, int);
+                    ^~~~~~~~~~~
+/usr/include/libio.h:467:20: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘_IO_seekpos’
+ extern _IO_off64_t _IO_seekpos (_IO_FILE *, _IO_off64_t, int);
+                    ^~~~~~~~~~~
+/usr/include/libio.h:469:35: error: expected declaration specifiers or ‘...’ before ‘_IO_FILE’
+ extern void _IO_free_backup_area (_IO_FILE *) __THROW;
+                                   ^~~~~~~~
+In file included from src/./io.c:9:0:
+/usr/include/stdio.h:110:19: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘fpos_t’
+ typedef _G_fpos_t fpos_t;
+                   ^~~~~~
+In file included from src/./io.c:9:0:
+/usr/include/stdio.h:168:25: error: storage class specified for parameter ‘stdin’
+ extern struct _IO_FILE *stdin;  /* Standard input stream.  */
+                         ^~~~~
+/usr/include/stdio.h:169:25: error: storage class specified for parameter ‘stdout’
+ extern struct _IO_FILE *stdout;  /* Standard output stream.  */
+                         ^~~~~~
+/usr/include/stdio.h:170:25: error: storage class specified for parameter ‘stderr’
+ extern struct _IO_FILE *stderr;  /* Standard error output stream.  */
+                         ^~~~~~
+/usr/include/stdio.h:178:12: error: storage class specified for parameter ‘remove’
+ extern int remove (const char *__filename) __THROW;
+            ^~~~~~
+/usr/include/stdio.h:180:12: error: storage class specified for parameter ‘rename’
+ extern int rename (const char *__old, const char *__new) __THROW;
+            ^~~~~~
+/usr/include/stdio.h:195:13: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+ extern FILE *tmpfile (void) __wur;
+             ^
+/usr/include/stdio.h:209:14: error: storage class specified for parameter ‘tmpnam’
+ extern char *tmpnam (char *__s) __THROW __wur;
+              ^~~~~~
+/usr/include/stdio.h:237:20: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int fclose (FILE *__stream);
+                    ^~~~
+/usr/include/stdio.h:242:20: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int fflush (FILE *__stream);
+                    ^~~~
+/usr/include/stdio.h:272:13: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+ extern FILE *fopen (const char *__restrict __filename,
+             ^
+/usr/include/stdio.h:278:13: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+ extern FILE *freopen (const char *__restrict __filename,
+             ^
+/usr/include/stdio.h:332:21: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern void setbuf (FILE *__restrict __stream, char *__restrict __buf) __THROW;
+                     ^~~~
+/usr/include/stdio.h:336:21: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int setvbuf (FILE *__restrict __stream, char *__restrict __buf,
+                     ^~~~
+/usr/include/stdio.h:356:21: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int fprintf (FILE *__restrict __stream,
+                     ^~~~
+/usr/include/stdio.h:362:12: error: storage class specified for parameter ‘printf’
+ extern int printf (const char *__restrict __format, ...);
+            ^~~~~~
+/usr/include/stdio.h:364:12: error: storage class specified for parameter ‘sprintf’
+ extern int sprintf (char *__restrict __s,
+            ^~~~~~~
+/usr/include/stdio.h:371:22: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int vfprintf (FILE *__restrict __s, const char *__restrict __format,
+                      ^~~~
+In file included from /usr/include/libio.h:31:0,
+                 from /usr/include/stdio.h:74,
+                 from src/./io.c:9:
+/usr/include/stdio.h:372:8: error: expected declaration specifiers or ‘...’ before ‘__gnuc_va_list’
+        _G_va_list __arg);
+        ^
+/usr/include/stdio.h:377:54: error: expected declaration specifiers or ‘...’ before ‘__gnuc_va_list’
+ extern int vprintf (const char *__restrict __format, _G_va_list __arg);
+                                                      ^
+/usr/include/stdio.h:380:8: error: expected declaration specifiers or ‘...’ before ‘__gnuc_va_list’
+        _G_va_list __arg) __THROWNL;
+        ^
+In file included from src/./io.c:9:0:
+/usr/include/stdio.h:386:12: error: storage class specified for parameter ‘snprintf’
+ extern int snprintf (char *__restrict __s, size_t __maxlen,
+            ^~~~~~~~
+In file included from /usr/include/libio.h:31:0,
+                 from /usr/include/stdio.h:74,
+                 from src/./io.c:9:
+/usr/include/stdio.h:391:42: error: expected declaration specifiers or ‘...’ before ‘__gnuc_va_list’
+         const char *__restrict __format, _G_va_list __arg)
+                                          ^
+In file included from src/./io.c:9:0:
+/usr/include/stdio.h:425:20: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int fscanf (FILE *__restrict __stream,
+                    ^~~~
+/usr/include/stdio.h:431:12: error: storage class specified for parameter ‘scanf’
+ extern int scanf (const char *__restrict __format, ...) __wur;
+            ^~~~~
+/usr/include/stdio.h:433:12: error: storage class specified for parameter ‘sscanf’
+ extern int sscanf (const char *__restrict __s,
+            ^~~~~~
+In file included from /usr/include/features.h:368:0,
+                 from /usr/include/stdint.h:25,
+                 from /usr/lib/gcc/x86_64-pc-linux-gnu/6.1.1/include/stdint.h:9,
+                 from include/shared.h:3,
+                 from include/io.h:4,
+                 from src/./io.c:1:
+/usr/include/stdio.h:443:12: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int __REDIRECT (fscanf, (FILE *__restrict __stream,
+            ^
+/usr/include/stdio.h:446:12: error: storage class specified for parameter ‘scanf’
+ extern int __REDIRECT (scanf, (const char *__restrict __format, ...),
+            ^
+/usr/include/stdio.h:446:12: error: redefinition of parameter ‘scanf’
+In file included from src/./io.c:9:0:
+/usr/include/stdio.h:431:12: note: previous definition of ‘scanf’ was here
+ extern int scanf (const char *__restrict __format, ...) __wur;
+            ^~~~~
+In file included from /usr/include/features.h:368:0,
+                 from /usr/include/stdint.h:25,
+                 from /usr/lib/gcc/x86_64-pc-linux-gnu/6.1.1/include/stdint.h:9,
+                 from include/shared.h:3,
+                 from include/io.h:4,
+                 from src/./io.c:1:
+/usr/include/stdio.h:448:12: error: storage class specified for parameter ‘sscanf’
+ extern int __REDIRECT_NTH (sscanf, (const char *__restrict __s,
+            ^
+/usr/include/stdio.h:448:12: error: redefinition of parameter ‘sscanf’
+In file included from src/./io.c:9:0:
+/usr/include/stdio.h:433:12: note: previous definition of ‘sscanf’ was here
+ extern int sscanf (const char *__restrict __s,
+            ^~~~~~
+/usr/include/stdio.h:471:21: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int vfscanf (FILE *__restrict __s, const char *__restrict __format,
+                     ^~~~
+In file included from /usr/include/libio.h:31:0,
+                 from /usr/include/stdio.h:74,
+                 from src/./io.c:9:
+/usr/include/stdio.h:472:7: error: expected declaration specifiers or ‘...’ before ‘__gnuc_va_list’
+       _G_va_list __arg)
+       ^
+/usr/include/stdio.h:479:53: error: expected declaration specifiers or ‘...’ before ‘__gnuc_va_list’
+ extern int vscanf (const char *__restrict __format, _G_va_list __arg)
+                                                     ^
+/usr/include/stdio.h:484:40: error: expected declaration specifiers or ‘...’ before ‘__gnuc_va_list’
+       const char *__restrict __format, _G_va_list __arg)
+                                        ^
+In file included from /usr/include/features.h:368:0,
+                 from /usr/include/stdint.h:25,
+                 from /usr/lib/gcc/x86_64-pc-linux-gnu/6.1.1/include/stdint.h:9,
+                 from include/shared.h:3,
+                 from include/io.h:4,
+                 from src/./io.c:1:
+/usr/include/stdio.h:494:12: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int __REDIRECT (vfscanf,
+            ^
+/usr/include/stdio.h:496:37: error: expected declaration specifiers or ‘...’ before ‘__gnuc_va_list’
+    const char *__restrict __format, _G_va_list __arg),
+                                     ^
+/usr/include/stdio.h:500:5: error: expected declaration specifiers or ‘...’ before ‘__gnuc_va_list’
+     _G_va_list __arg), __isoc99_vscanf)
+     ^
+/usr/include/stdio.h:505:8: error: expected declaration specifiers or ‘...’ before ‘__gnuc_va_list’
+        _G_va_list __arg), __isoc99_vsscanf)
+        ^
+In file included from src/./io.c:9:0:
+/usr/include/stdio.h:531:19: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int fgetc (FILE *__stream);
+                   ^~~~
+/usr/include/stdio.h:532:18: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int getc (FILE *__stream);
+                  ^~~~
+/usr/include/stdio.h:538:12: error: storage class specified for parameter ‘getchar’
+ extern int getchar (void);
+            ^~~~~~~
+/usr/include/stdio.h:573:28: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int fputc (int __c, FILE *__stream);
+                            ^~~~
+/usr/include/stdio.h:574:27: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int putc (int __c, FILE *__stream);
+                           ^~~~
+/usr/include/stdio.h:580:12: error: storage class specified for parameter ‘putchar’
+ extern int putchar (int __c);
+            ^~~~~~~
+/usr/include/stdio.h:622:52: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern char *fgets (char *__restrict __s, int __n, FILE *__restrict __stream)
+                                                    ^~~~
+/usr/include/stdio.h:638:14: error: storage class specified for parameter ‘gets’
+ extern char *gets (char *__s) __wur __attribute_deprecated__;
+              ^~~~
+/usr/include/stdio.h:689:47: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int fputs (const char *__restrict __s, FILE *__restrict __stream);
+                                               ^~~~
+/usr/include/stdio.h:695:12: error: storage class specified for parameter ‘puts’
+ extern int puts (const char *__s);
+            ^~~~
+/usr/include/stdio.h:702:29: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int ungetc (int __c, FILE *__stream);
+                             ^~~~
+/usr/include/stdio.h:710:20: error: expected declaration specifiers or ‘...’ before ‘FILE’
+        size_t __n, FILE *__restrict __stream) __wur;
+                    ^~~~
+/usr/include/stdio.h:716:21: error: expected declaration specifiers or ‘...’ before ‘FILE’
+         size_t __n, FILE *__restrict __s);
+                     ^~~~
+/usr/include/stdio.h:749:19: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int fseek (FILE *__stream, long int __off, int __whence);
+                   ^~~~
+/usr/include/stdio.h:754:24: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern long int ftell (FILE *__stream) __wur;
+                        ^~~~
+/usr/include/stdio.h:759:21: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern void rewind (FILE *__stream);
+                     ^~~~
+/usr/include/stdio.h:798:21: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int fgetpos (FILE *__restrict __stream, fpos_t *__restrict __pos);
+                     ^~~~
+/usr/include/stdio.h:798:48: error: unknown type name ‘fpos_t’
+ extern int fgetpos (FILE *__restrict __stream, fpos_t *__restrict __pos);
+                                                ^~~~~~
+/usr/include/stdio.h:803:21: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int fsetpos (FILE *__stream, const fpos_t *__pos);
+                     ^~~~
+/usr/include/stdio.h:803:43: error: unknown type name ‘fpos_t’
+ extern int fsetpos (FILE *__stream, const fpos_t *__pos);
+                                           ^~~~~~
+/usr/include/stdio.h:826:23: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern void clearerr (FILE *__stream) __THROW;
+                       ^~~~
+/usr/include/stdio.h:828:18: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int feof (FILE *__stream) __THROW __wur;
+                  ^~~~
+/usr/include/stdio.h:830:20: error: expected declaration specifiers or ‘...’ before ‘FILE’
+ extern int ferror (FILE *__stream) __THROW __wur;
+                    ^~~~
+/usr/include/stdio.h:846:13: error: storage class specified for parameter ‘perror’
+ extern void perror (const char *__s);
+             ^~~~~~
+In file included from src/./io.c:10:0:
+/usr/include/stdlib.h:101:5: error: storage class specified for parameter ‘div_t’
+   } div_t;
+     ^~~~~
+/usr/include/stdlib.h:109:5: error: storage class specified for parameter ‘ldiv_t’
+   } ldiv_t;
+     ^~~~~~
+/usr/include/stdlib.h:117:1: error: expected declaration specifiers before ‘__extension__’
+ __extension__ typedef struct
+ ^~~~~~~~~~~~~
+/usr/include/stdlib.h:121:5: error: expected declaration specifiers before ‘lldiv_t’
+   } lldiv_t;
+     ^~~~~~~
+/usr/include/stdlib.h:139:15: error: storage class specified for parameter ‘__ctype_get_mb_cur_max’
+ extern size_t __ctype_get_mb_cur_max (void) __THROW __wur;
+               ^~~~~~~~~~~~~~~~~~~~~~
+/usr/include/stdlib.h:144:15: error: storage class specified for parameter ‘atof’
+ extern double atof (const char *__nptr)
+               ^~~~
+/usr/include/stdlib.h:147:12: error: storage class specified for parameter ‘atoi’
+ extern int atoi (const char *__nptr)
+            ^~~~
+/usr/include/stdlib.h:150:17: error: storage class specified for parameter ‘atol’
+ extern long int atol (const char *__nptr)
+                 ^~~~
+/usr/include/stdlib.h:157:1: error: expected declaration specifiers before ‘__extension__’
+ __extension__ extern long long int atoll (const char *__nptr)
+ ^~~~~~~~~~~~~
+/usr/include/stdlib.h:164:15: error: storage class specified for parameter ‘strtod’
+ extern double strtod (const char *__restrict __nptr,
+               ^~~~~~
+/usr/include/stdlib.h:172:14: error: storage class specified for parameter ‘strtof’
+ extern float strtof (const char *__restrict __nptr,
+              ^~~~~~
+/usr/include/stdlib.h:175:20: error: storage class specified for parameter ‘strtold’
+ extern long double strtold (const char *__restrict __nptr,
+                    ^~~~~~~
+/usr/include/stdlib.h:183:17: error: storage class specified for parameter ‘strtol’
+ extern long int strtol (const char *__restrict __nptr,
+                 ^~~~~~
+/usr/include/stdlib.h:187:26: error: storage class specified for parameter ‘strtoul’
+ extern unsigned long int strtoul (const char *__restrict __nptr,
+                          ^~~~~~~
+/usr/include/stdlib.h:208:1: error: expected declaration specifiers before ‘__extension__’
+ __extension__
+ ^~~~~~~~~~~~~
+/usr/include/stdlib.h:213:1: error: expected declaration specifiers before ‘__extension__’
+ __extension__
+ ^~~~~~~~~~~~~
+/usr/include/stdlib.h:374:12: error: storage class specified for parameter ‘rand’
+ extern int rand (void) __THROW;
+            ^~~~
+/usr/include/stdlib.h:376:13: error: storage class specified for parameter ‘srand’
+ extern void srand (unsigned int __seed) __THROW;
+             ^~~~~
+/usr/include/stdlib.h:466:14: error: storage class specified for parameter ‘malloc’
+ extern void *malloc (size_t __size) __THROW __attribute_malloc__ __wur;
+              ^~~~~~
+/usr/include/stdlib.h:468:14: error: storage class specified for parameter ‘calloc’
+ extern void *calloc (size_t __nmemb, size_t __size)
+              ^~~~~~
+/usr/include/stdlib.h:480:14: error: storage class specified for parameter ‘realloc’
+ extern void *realloc (void *__ptr, size_t __size)
+              ^~~~~~~
+/usr/include/stdlib.h:483:13: error: storage class specified for parameter ‘free’
+ extern void free (void *__ptr) __THROW;
+             ^~~~
+/usr/include/stdlib.h:515:13: error: storage class specified for parameter ‘abort’
+ extern void abort (void) __THROW __attribute__ ((__noreturn__));
+             ^~~~~
+/usr/include/stdlib.h:519:12: error: storage class specified for parameter ‘atexit’
+ extern int atexit (void (*__func) (void)) __THROW __nonnull ((1));
+            ^~~~~~
+/usr/include/stdlib.h:543:13: error: storage class specified for parameter ‘exit’
+ extern void exit (int __status) __THROW __attribute__ ((__noreturn__));
+             ^~~~
+/usr/include/stdlib.h:557:13: error: storage class specified for parameter ‘_Exit’
+ extern void _Exit (int __status) __THROW __attribute__ ((__noreturn__));
+             ^~~~~
+/usr/include/stdlib.h:564:14: error: storage class specified for parameter ‘getenv’
+ extern char *getenv (const char *__name) __THROW __nonnull ((1)) __wur;
+              ^~~~~~
+/usr/include/stdlib.h:716:12: error: storage class specified for parameter ‘system’
+ extern int system (const char *__command) __wur;
+            ^~~~~~
+/usr/include/stdlib.h:741:15: error: storage class specified for parameter ‘__compar_fn_t’
+ typedef int (*__compar_fn_t) (const void *, const void *);
+               ^~~~~~~~~~~~~
+/usr/include/stdlib.h:755:40: error: expected declaration specifiers or ‘...’ before ‘__compar_fn_t’
+         size_t __nmemb, size_t __size, __compar_fn_t __compar)
+                                        ^~~~~~~~~~~~~
+/usr/include/stdlib.h:765:6: error: expected declaration specifiers or ‘...’ before ‘__compar_fn_t’
+      __compar_fn_t __compar) __nonnull ((1, 4));
+      ^~~~~~~~~~~~~
+/usr/include/stdlib.h:774:12: error: storage class specified for parameter ‘abs’
+ extern int abs (int __x) __THROW __attribute__ ((__const__)) __wur;
+            ^~~
+/usr/include/stdlib.h:775:17: error: storage class specified for parameter ‘labs’
+ extern long int labs (long int __x) __THROW __attribute__ ((__const__)) __wur;
+                 ^~~~
+/usr/include/stdlib.h:779:1: error: expected declaration specifiers before ‘__extension__’
+ __extension__ extern long long int llabs (long long int __x)
+ ^~~~~~~~~~~~~
+/usr/include/stdlib.h:788:14: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘div’
+ extern div_t div (int __numer, int __denom)
+              ^~~
+/usr/include/stdlib.h:790:15: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘ldiv’
+ extern ldiv_t ldiv (long int __numer, long int __denom)
+               ^~~~
+/usr/include/stdlib.h:796:1: error: expected declaration specifiers before ‘__extension__’
+ __extension__ extern lldiv_t lldiv (long long int __numer,
+ ^~~~~~~~~~~~~
+/usr/include/stdlib.h:862:12: error: storage class specified for parameter ‘mblen’
+ extern int mblen (const char *__s, size_t __n) __THROW;
+            ^~~~~
+/usr/include/stdlib.h:865:12: error: storage class specified for parameter ‘mbtowc’
+ extern int mbtowc (wchar_t *__restrict __pwc,
+            ^~~~~~
+/usr/include/stdlib.h:869:12: error: storage class specified for parameter ‘wctomb’
+ extern int wctomb (char *__s, wchar_t __wchar) __THROW;
+            ^~~~~~
+/usr/include/stdlib.h:873:15: error: storage class specified for parameter ‘mbstowcs’
+ extern size_t mbstowcs (wchar_t *__restrict  __pwcs,
+               ^~~~~~~~
+/usr/include/stdlib.h:876:15: error: storage class specified for parameter ‘wcstombs’
+ extern size_t wcstombs (char *__restrict __s,
+               ^~~~~~~~
+In file included from src/./io.c:11:0:
+/usr/include/string.h:42:14: error: storage class specified for parameter ‘memcpy’
+ extern void *memcpy (void *__restrict __dest, const void *__restrict __src,
+              ^~~~~~
+/usr/include/string.h:46:14: error: storage class specified for parameter ‘memmove’
+ extern void *memmove (void *__dest, const void *__src, size_t __n)
+              ^~~~~~~
+/usr/include/string.h:62:14: error: storage class specified for parameter ‘memset’
+ extern void *memset (void *__s, int __c, size_t __n) __THROW __nonnull ((1));
+              ^~~~~~
+/usr/include/string.h:65:12: error: storage class specified for parameter ‘memcmp’
+ extern int memcmp (const void *__s1, const void *__s2, size_t __n)
+            ^~~~~~
+/usr/include/string.h:92:14: error: storage class specified for parameter ‘memchr’
+ extern void *memchr (const void *__s, int __c, size_t __n)
+              ^~~~~~
+/usr/include/string.h:125:14: error: storage class specified for parameter ‘strcpy’
+ extern char *strcpy (char *__restrict __dest, const char *__restrict __src)
+              ^~~~~~
+/usr/include/string.h:128:14: error: storage class specified for parameter ‘strncpy’
+ extern char *strncpy (char *__restrict __dest,
+              ^~~~~~~
+/usr/include/string.h:133:14: error: storage class specified for parameter ‘strcat’
+ extern char *strcat (char *__restrict __dest, const char *__restrict __src)
+              ^~~~~~
+/usr/include/string.h:136:14: error: storage class specified for parameter ‘strncat’
+ extern char *strncat (char *__restrict __dest, const char *__restrict __src,
+              ^~~~~~~
+/usr/include/string.h:140:12: error: storage class specified for parameter ‘strcmp’
+ extern int strcmp (const char *__s1, const char *__s2)
+            ^~~~~~
+/usr/include/string.h:143:12: error: storage class specified for parameter ‘strncmp’
+ extern int strncmp (const char *__s1, const char *__s2, size_t __n)
+            ^~~~~~~
+/usr/include/string.h:147:12: error: storage class specified for parameter ‘strcoll’
+ extern int strcoll (const char *__s1, const char *__s2)
+            ^~~~~~~
+/usr/include/string.h:150:15: error: storage class specified for parameter ‘strxfrm’
+ extern size_t strxfrm (char *__restrict __dest,
+               ^~~~~~~
+/usr/include/string.h:231:14: error: storage class specified for parameter ‘strchr’
+ extern char *strchr (const char *__s, int __c)
+              ^~~~~~
+/usr/include/string.h:258:14: error: storage class specified for parameter ‘strrchr’
+ extern char *strrchr (const char *__s, int __c)
+              ^~~~~~~
+/usr/include/string.h:280:15: error: storage class specified for parameter ‘strcspn’
+ extern size_t strcspn (const char *__s, const char *__reject)
+               ^~~~~~~
+/usr/include/string.h:284:15: error: storage class specified for parameter ‘strspn’
+ extern size_t strspn (const char *__s, const char *__accept)
+               ^~~~~~
+/usr/include/string.h:310:14: error: storage class specified for parameter ‘strpbrk’
+ extern char *strpbrk (const char *__s, const char *__accept)
+              ^~~~~~~
+/usr/include/string.h:337:14: error: storage class specified for parameter ‘strstr’
+ extern char *strstr (const char *__haystack, const char *__needle)
+              ^~~~~~
+/usr/include/string.h:343:14: error: storage class specified for parameter ‘strtok’
+ extern char *strtok (char *__restrict __s, const char *__restrict __delim)
+              ^~~~~~
+/usr/include/string.h:349:14: error: storage class specified for parameter ‘__strtok_r’
+ extern char *__strtok_r (char *__restrict __s,
+              ^~~~~~~~~~
+/usr/include/string.h:394:15: error: storage class specified for parameter ‘strlen’
+ extern size_t strlen (const char *__s)
+               ^~~~~~
+/usr/include/string.h:408:14: error: storage class specified for parameter ‘strerror’
+ extern char *strerror (int __errnum) __THROW;
+              ^~~~~~~~
+/usr/include/string.h:446:13: error: storage class specified for parameter ‘__bzero’
+ extern void __bzero (void *__s, size_t __n) __THROW __nonnull ((1));
+             ^~~~~~~
+In file included from /usr/include/dirent.h:61:0,
+                 from src/./io.c:12:
+/usr/include/bits/dirent.h:25:5: error: expected specifier-qualifier-list before ‘__ino_t’
+     __ino_t d_ino;
+     ^~~~~~~
+In file included from src/./io.c:12:0:
+/usr/include/dirent.h:127:28: error: storage class specified for parameter ‘DIR’
+ typedef struct __dirstream DIR;
+                            ^~~
+/usr/include/dirent.h:134:12: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘*’ token
+ extern DIR *opendir (const char *__name) __nonnull ((1));
+            ^
+/usr/include/dirent.h:149:22: error: expected declaration specifiers or ‘...’ before ‘DIR’
+ extern int closedir (DIR *__dirp) __nonnull ((1));
+                      ^~~
+/usr/include/dirent.h:162:32: error: expected declaration specifiers or ‘...’ before ‘DIR’
+ extern struct dirent *readdir (DIR *__dirp) __nonnull ((1));
+                                ^~~
+/usr/include/dirent.h:208:24: error: expected declaration specifiers or ‘...’ before ‘DIR’
+ extern void rewinddir (DIR *__dirp) __THROW __nonnull ((1));
+                        ^~~
+In file included from src/./io.c:13:0:
+/usr/include/sys/types.h:44:9: error: unknown type name ‘__loff_t’
+ typedef __loff_t loff_t;
+         ^~~~~~~~
+/usr/include/sys/types.h:44:18: error: storage class specified for parameter ‘loff_t’
+ typedef __loff_t loff_t;
+                  ^~~~~~
+/usr/include/sys/types.h:48:17: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘ino_t’
+ typedef __ino_t ino_t;
+                 ^~~~~
+/usr/include/sys/types.h:60:17: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘dev_t’
+ typedef __dev_t dev_t;
+                 ^~~~~
+/usr/include/sys/types.h:65:17: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘gid_t’
+ typedef __gid_t gid_t;
+                 ^~~~~
+/usr/include/sys/types.h:70:18: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘mode_t’
+ typedef __mode_t mode_t;
+                  ^~~~~~
+/usr/include/sys/types.h:75:19: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘nlink_t’
+ typedef __nlink_t nlink_t;
+                   ^~~~~~~
+/usr/include/sys/types.h:80:17: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘uid_t’
+ typedef __uid_t uid_t;
+                 ^~~~~
+/usr/include/sys/types.h:86:17: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘off_t’
+ typedef __off_t off_t;
+                 ^~~~~
+/usr/include/sys/types.h:98:17: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘pid_t’
+ typedef __pid_t pid_t;
+                 ^~~~~
+/usr/include/sys/types.h:109:19: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘ssize_t’
+ typedef __ssize_t ssize_t;
+                   ^~~~~~~
+In file included from /usr/include/sys/types.h:132:0,
+                 from src/./io.c:13:
+/usr/include/time.h:75:18: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘time_t’
+ typedef __time_t time_t;
+                  ^~~~~~
+/usr/include/time.h:91:21: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘clockid_t’
+ typedef __clockid_t clockid_t;
+                     ^~~~~~~~~
+/usr/include/time.h:103:19: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘timer_t’
+ typedef __timer_t timer_t;
+                   ^~~~~~~
+In file included from src/./io.c:13:0:
+/usr/include/sys/types.h:200:1: error: storage class specified for parameter ‘u_int8_t’
+ __u_intN_t (8, __QI__);
+ ^
+/usr/include/sys/types.h:201:1: error: storage class specified for parameter ‘u_int16_t’
+ __u_intN_t (16, __HI__);
+ ^
+/usr/include/sys/types.h:202:1: error: storage class specified for parameter ‘u_int32_t’
+ __u_intN_t (32, __SI__);
+ ^
+/usr/include/sys/types.h:203:1: error: storage class specified for parameter ‘u_int64_t’
+ __u_intN_t (64, __DI__);
+ ^
+/usr/include/sys/types.h:205:13: error: storage class specified for parameter ‘register_t’
+ typedef int register_t __attribute__ ((__mode__ (__word__)));
+             ^~~~~~~~~~
+/usr/include/sys/types.h:235:20: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘blkcnt_t’
+ typedef __blkcnt_t blkcnt_t;  /* Type to count number of disk blocks.  */
+                    ^~~~~~~~
+/usr/include/sys/types.h:239:22: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘fsblkcnt_t’
+ typedef __fsblkcnt_t fsblkcnt_t; /* Type to count file system blocks.  */
+                      ^~~~~~~~~~
+/usr/include/sys/types.h:243:22: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘fsfilcnt_t’
+ typedef __fsfilcnt_t fsfilcnt_t; /* Type to count file system inodes.  */
+                      ^~~~~~~~~~
+In file included from /usr/include/sys/stat.h:104:0,
+                 from src/./io.c:14:
+/usr/include/bits/stat.h:48:5: error: expected specifier-qualifier-list before ‘__dev_t’
+     __dev_t st_dev;  /* Device.  */
+     ^~~~~~~
+In file included from src/./io.c:14:0:
+/usr/include/sys/stat.h:208:12: error: storage class specified for parameter ‘stat’
+ extern int stat (const char *__restrict __file,
+            ^~~~
+/usr/include/sys/stat.h:213:12: error: storage class specified for parameter ‘fstat’
+ extern int fstat (int __fd, struct stat *__buf) __THROW __nonnull ((2));
+            ^~~~~
+/usr/include/sys/stat.h:283:39: error: expected declaration specifiers or ‘...’ before ‘__mode_t’
+ extern int chmod (const char *__file, __mode_t __mode)
+                                       ^~~~~~~~
+/usr/include/sys/stat.h:311:17: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘umask’
+ extern __mode_t umask (__mode_t __mask) __THROW;
+                 ^~~~~
+/usr/include/sys/stat.h:320:39: error: expected declaration specifiers or ‘...’ before ‘__mode_t’
+ extern int mkdir (const char *__path, __mode_t __mode)
+                                       ^~~~~~~~
+/usr/include/sys/stat.h:349:40: error: expected declaration specifiers or ‘...’ before ‘__mode_t’
+ extern int mkfifo (const char *__path, __mode_t __mode)
+                                        ^~~~~~~~
+/usr/include/sys/stat.h:398:12: error: storage class specified for parameter ‘__fxstat’
+ extern int __fxstat (int __ver, int __fildes, struct stat *__stat_buf)
+            ^~~~~~~~
+/usr/include/sys/stat.h:400:12: error: storage class specified for parameter ‘__xstat’
+ extern int __xstat (int __ver, const char *__filename,
+            ^~~~~~~
+/usr/include/sys/stat.h:402:12: error: storage class specified for parameter ‘__lxstat’
+ extern int __lxstat (int __ver, const char *__filename,
+            ^~~~~~~~
+/usr/include/sys/stat.h:404:12: error: storage class specified for parameter ‘__fxstatat’
+ extern int __fxstatat (int __ver, int __fildes, const char *__filename,
+            ^~~~~~~~~~
+/usr/include/sys/stat.h:441:53: error: expected declaration specifiers or ‘...’ before ‘__mode_t’
+ extern int __xmknod (int __ver, const char *__path, __mode_t __mode,
+                                                     ^~~~~~~~
+/usr/include/sys/stat.h:442:8: error: expected declaration specifiers or ‘...’ before ‘__dev_t’
+        __dev_t *__dev) __THROW __nonnull ((2, 4));
+        ^~~~~~~
+/usr/include/sys/stat.h:445:10: error: expected declaration specifiers or ‘...’ before ‘__mode_t’
+          __mode_t __mode, __dev_t *__dev)
+          ^~~~~~~~
+/usr/include/sys/stat.h:445:27: error: expected declaration specifiers or ‘...’ before ‘__dev_t’
+          __mode_t __mode, __dev_t *__dev)
+                           ^~~~~~~
+In file included from src/./io.c:15:0:
+/usr/include/unistd.h:290:12: error: storage class specified for parameter ‘access’
+ extern int access (const char *__name, int __type) __THROW __nonnull ((1));
+            ^~~~~~
+/usr/include/unistd.h:337:16: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘lseek’
+ extern __off_t lseek (int __fd, __off_t __offset, int __whence) __THROW;
+                ^~~~~
+/usr/include/unistd.h:356:12: error: storage class specified for parameter ‘close’
+ extern int close (int __fd);
+            ^~~~~
+/usr/include/unistd.h:363:8: error: unknown type name ‘ssize_t’
+ extern ssize_t read (int __fd, void *__buf, size_t __nbytes) __wur;
+        ^~~~~~~
+/usr/include/unistd.h:363:16: error: storage class specified for parameter ‘read’
+ extern ssize_t read (int __fd, void *__buf, size_t __nbytes) __wur;
+                ^~~~
+/usr/include/unistd.h:369:8: error: unknown type name ‘ssize_t’
+ extern ssize_t write (int __fd, const void *__buf, size_t __n) __wur;
+        ^~~~~~~
+/usr/include/unistd.h:369:16: error: storage class specified for parameter ‘write’
+ extern ssize_t write (int __fd, const void *__buf, size_t __n) __wur;
+                ^~~~~
+/usr/include/unistd.h:420:12: error: storage class specified for parameter ‘pipe’
+ extern int pipe (int __pipedes[2]) __THROW __wur;
+            ^~~~
+/usr/include/unistd.h:435:21: error: storage class specified for parameter ‘alarm’
+ extern unsigned int alarm (unsigned int __seconds) __THROW;
+                     ^~~~~
+/usr/include/unistd.h:447:21: error: storage class specified for parameter ‘sleep’
+ extern unsigned int sleep (unsigned int __seconds);
+                     ^~~~~
+/usr/include/unistd.h:472:12: error: storage class specified for parameter ‘pause’
+ extern int pause (void);
+            ^~~~~
+/usr/include/unistd.h:476:39: error: expected declaration specifiers or ‘...’ before ‘__uid_t’
+ extern int chown (const char *__file, __uid_t __owner, __gid_t __group)
+                                       ^~~~~~~
+/usr/include/unistd.h:476:56: error: expected declaration specifiers or ‘...’ before ‘__gid_t’
+ extern int chown (const char *__file, __uid_t __owner, __gid_t __group)
+                                                        ^~~~~~~
+/usr/include/unistd.h:500:12: error: storage class specified for parameter ‘chdir’
+ extern int chdir (const char *__path) __THROW __nonnull ((1)) __wur;
+            ^~~~~
+/usr/include/unistd.h:514:14: error: storage class specified for parameter ‘getcwd’
+ extern char *getcwd (char *__buf, size_t __size) __THROW __wur;
+              ^~~~~~
+/usr/include/unistd.h:534:12: error: storage class specified for parameter ‘dup’
+ extern int dup (int __fd) __THROW __wur;
+            ^~~
+/usr/include/unistd.h:537:12: error: storage class specified for parameter ‘dup2’
+ extern int dup2 (int __fd, int __fd2) __THROW;
+            ^~~~
+/usr/include/unistd.h:546:15: error: storage class specified for parameter ‘__environ’
+ extern char **__environ;
+               ^~~~~~~~~
+/usr/include/unistd.h:554:12: error: storage class specified for parameter ‘execve’
+ extern int execve (const char *__path, char *const __argv[],
+            ^~~~~~
+/usr/include/unistd.h:566:12: error: storage class specified for parameter ‘execv’
+ extern int execv (const char *__path, char *const __argv[])
+            ^~~~~
+/usr/include/unistd.h:571:12: error: storage class specified for parameter ‘execle’
+ extern int execle (const char *__path, const char *__arg, ...)
+            ^~~~~~
+/usr/include/unistd.h:576:12: error: storage class specified for parameter ‘execl’
+ extern int execl (const char *__path, const char *__arg, ...)
+            ^~~~~
+/usr/include/unistd.h:581:12: error: storage class specified for parameter ‘execvp’
+ extern int execvp (const char *__file, char *const __argv[])
+            ^~~~~~
+/usr/include/unistd.h:587:12: error: storage class specified for parameter ‘execlp’
+ extern int execlp (const char *__file, const char *__arg, ...)
+            ^~~~~~
+/usr/include/unistd.h:606:13: error: storage class specified for parameter ‘_exit’
+ extern void _exit (int __status) __attribute__ ((__noreturn__));
+             ^~~~~
+In file included from src/./io.c:15:0:
+/usr/include/unistd.h:615:17: error: storage class specified for parameter ‘pathconf’
+ extern long int pathconf (const char *__path, int __name)
+                 ^~~~~~~~
+/usr/include/unistd.h:619:17: error: storage class specified for parameter ‘fpathconf’
+ extern long int fpathconf (int __fd, int __name) __THROW;
+                 ^~~~~~~~~
+/usr/include/unistd.h:622:17: error: storage class specified for parameter ‘sysconf’
+ extern long int sysconf (int __name) __THROW;
+                 ^~~~~~~
+/usr/include/unistd.h:631:16: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘getpid’
+ extern __pid_t getpid (void) __THROW;
+                ^~~~~~
+/usr/include/unistd.h:634:16: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘getppid’
+ extern __pid_t getppid (void) __THROW;
+                ^~~~~~~
+/usr/include/unistd.h:637:16: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘getpgrp’
+ extern __pid_t getpgrp (void) __THROW;
+                ^~~~~~~
+/usr/include/unistd.h:640:16: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘__getpgid’
+ extern __pid_t __getpgid (__pid_t __pid) __THROW;
+                ^~~~~~~~~
+/usr/include/unistd.h:649:21: error: expected declaration specifiers or ‘...’ before ‘__pid_t’
+ extern int setpgid (__pid_t __pid, __pid_t __pgid) __THROW;
+                     ^~~~~~~
+/usr/include/unistd.h:649:36: error: expected declaration specifiers or ‘...’ before ‘__pid_t’
+ extern int setpgid (__pid_t __pid, __pid_t __pgid) __THROW;
+                                    ^~~~~~~
+/usr/include/unistd.h:670:16: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘setsid’
+ extern __pid_t setsid (void) __THROW;
+                ^~~~~~
+/usr/include/unistd.h:678:16: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘getuid’
+ extern __uid_t getuid (void) __THROW;
+                ^~~~~~
+/usr/include/unistd.h:681:16: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘geteuid’
+ extern __uid_t geteuid (void) __THROW;
+                ^~~~~~~
+/usr/include/unistd.h:684:16: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘getgid’
+ extern __gid_t getgid (void) __THROW;
+                ^~~~~~
+/usr/include/unistd.h:687:16: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘getegid’
+ extern __gid_t getegid (void) __THROW;
+                ^~~~~~~
+/usr/include/unistd.h:692:35: error: expected declaration specifiers or ‘...’ before ‘__gid_t’
+ extern int getgroups (int __size, __gid_t __list[]) __THROW __wur;
+                                   ^~~~~~~
+/usr/include/unistd.h:703:20: error: expected declaration specifiers or ‘...’ before ‘__uid_t’
+ extern int setuid (__uid_t __uid) __THROW __wur;
+                    ^~~~~~~
+/usr/include/unistd.h:720:20: error: expected declaration specifiers or ‘...’ before ‘__gid_t’
+ extern int setgid (__gid_t __gid) __THROW __wur;
+                    ^~~~~~~
+/usr/include/unistd.h:759:16: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘fork’
+ extern __pid_t fork (void) __THROWNL;
+                ^~~~
+/usr/include/unistd.h:773:14: error: storage class specified for parameter ‘ttyname’
+ extern char *ttyname (int __fd) __THROW;
+              ^~~~~~~
+/usr/include/unistd.h:777:12: error: storage class specified for parameter ‘ttyname_r’
+ extern int ttyname_r (int __fd, char *__buf, size_t __buflen)
+            ^~~~~~~~~
+/usr/include/unistd.h:782:12: error: storage class specified for parameter ‘isatty’
+ extern int isatty (int __fd) __THROW;
+            ^~~~~~
+/usr/include/unistd.h:793:12: error: storage class specified for parameter ‘link’
+ extern int link (const char *__from, const char *__to)
+            ^~~~
+/usr/include/unistd.h:829:12: error: storage class specified for parameter ‘unlink’
+ extern int unlink (const char *__name) __THROW __nonnull ((1));
+            ^~~~~~
+/usr/include/unistd.h:838:12: error: storage class specified for parameter ‘rmdir’
+ extern int rmdir (const char *__path) __THROW __nonnull ((1));
+            ^~~~~
+/usr/include/unistd.h:842:16: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘tcgetpgrp’
+ extern __pid_t tcgetpgrp (int __fd) __THROW;
+                ^~~~~~~~~
+/usr/include/unistd.h:845:33: error: expected declaration specifiers or ‘...’ before ‘__pid_t’
+ extern int tcsetpgrp (int __fd, __pid_t __pgrp_id) __THROW;
+                                 ^~~~~~~
+/usr/include/unistd.h:852:14: error: storage class specified for parameter ‘getlogin’
+ extern char *getlogin (void);
+              ^~~~~~~~
+/usr/include/unistd.h:959:12: error: storage class specified for parameter ‘fsync’
+ extern int fsync (int __fd);
+            ^~~~~
+In file included from /usr/include/fcntl.h:35:0,
+                 from src/./io.c:16:
+/usr/include/bits/fcntl.h:40:5: error: expected specifier-qualifier-list before ‘__off_t’
+     __off_t l_start; /* Offset where the lock begins.  */
+     ^~~~~~~
+In file included from src/./io.c:16:0:
+/usr/include/fcntl.h:169:12: error: storage class specified for parameter ‘fcntl’
+ extern int fcntl (int __fd, int __cmd, ...);
+            ^~~~~
+/usr/include/fcntl.h:179:12: error: storage class specified for parameter ‘open’
+ extern int open (const char *__file, int __oflag, ...) __nonnull ((1));
+            ^~~~
+/usr/include/fcntl.h:225:39: error: unknown type name ‘mode_t’
+ extern int creat (const char *__file, mode_t __mode) __nonnull ((1));
+                                       ^~~~~~
+src/./io.c:20:14: error: storage class specified for parameter ‘ROOT_FREECOIN’
+ static char *ROOT_FREECOIN;
+              ^~~~~~~~~~~~~
+src/./io.c:21:14: error: storage class specified for parameter ‘DIR_BLOCKS’
+ static char *DIR_BLOCKS;
+              ^~~~~~~~~~
+src/./io.c:22:14: error: storage class specified for parameter ‘DIR_HEADS’
+ static char *DIR_HEADS;
+              ^~~~~~~~~
+src/./io.c:23:14: error: storage class specified for parameter ‘DIR_TXINDEX’
+ static char *DIR_TXINDEX;
+              ^~~~~~~~~~~
+src/./io.c:24:14: error: storage class specified for parameter ‘DIR_KEYS’
+ static char *DIR_KEYS;
+              ^~~~~~~~
+src/./io.c:27:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+ {
+ ^
+src/./io.c:55:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+ {
+ ^
+src/./io.c:86:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+ {
+ ^
+src/./io.c:102:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+ {
+ ^
+src/./io.c:117:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+ {
+ ^
+src/./io.c:128:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+ {
+ ^
+src/./io.c:141:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+ {
+ ^
+src/./io.c:162:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+ {
+ ^
+src/./io.c:192:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+ {
+ ^
+src/./io.c:205:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+ {
+ ^
+src/./io.c:216:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+ {
+ ^
+src/./io.c:241:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+ {
+ ^
+src/./io.c:245:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+ {
+ ^
+src/./io.c:296:1: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘{’ token
+ {
+ ^
+In file included from src/./io.c:8:0:
+include/chain.h:23:6: error: old-style parameter declarations in prototyped function definition
+ void chain_compute_next_target(block_header_t *header_b, uint8_t *next_target)
+      ^~~~~~~~~~~~~~~~~~~~~~~~~
+src/./io.c:327:1: error: expected ‘{’ at end of input
+ }
+ ^
+Makefile:22: recipe for target 'build/./io.o' failed
+make[1]: *** [build/./io.o] Error 1
+make[1]: Leaving directory '/home/sam/git/freecoin/lib'
+Makefile:10: recipe for target 'lib' failed
+make: *** [lib] Error 2

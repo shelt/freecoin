@@ -36,9 +36,26 @@ void io_init()
  * HEADS *
  *********/
 
-uint32_t io_head_count();
+uint32_t io_head_count()
+{
+    int count = 0;
+    DIR * dirp;
+    struct dirent * entry;
 
-void io_head_load_all(head_t *dst);
+    dirp = opendir(DIR_HEADS); /* There should be error handling after this */
+    while ((entry = readdir(dirp)) != NULL) 
+        if (entry->d_type == DT_REG) /* If the entry is a regular file */
+            file_count++;
+
+    closedir(dirp);
+
+    return count;
+}
+
+void io_head_load_all(head_t *dst)
+{
+    
+}
 
 void io_head_load(uint8_t *hash, head_t *dst);
 

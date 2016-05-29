@@ -1,9 +1,9 @@
 .PHONY: lib clean
 BINS=admin client freecoind miner testing
 
-default: all
+default: lib-dist all
 all: $(BINS)
-dist: default
+lib-dist: 
 	make dist -C lib
 
 lib:

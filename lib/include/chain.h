@@ -20,7 +20,7 @@ void chain_clean();
 
 block_t *m_genesis_block();
 
-void chain_compute_next_target(block_header_t *header_b, uint8_t *next_target)
+void chain_compute_next_target(block_header_t *header_b, uint8_t *next_target);
 
 #endif /* CHAIN_H */
 

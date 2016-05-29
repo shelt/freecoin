@@ -111,14 +111,14 @@ block_t *m_gen_genesis_block()
 
 
 // TODO verify this works correctly
-uint8_t chain_compute_next_target(block_header_t *header_b, uint8_t *next_target)
+void chain_compute_next_target(block_header_t *header_b, uint8_t *next_target)
 {
     uint16_t retval;
     uint8_t *hash_buffer_1 = malloc(SIZE_SHA256);
     uint8_t *hash_buffer_2 = malloc(SIZE_SHA256);
     uint8_t *hash_buffer_3 = malloc(SIZE_SHA256);
     
-    block_header_t *header_a;
+    block_header_t header_a;
     
     if (header_b->height < CHAIN_RECALC_INTERVAL)
     {
@@ -128,9 +128,9 @@ uint8_t chain_compute_next_target(block_header_t *header_b, uint8_t *next_target
     {
         //TODO this function no longer exists
         io_block_at_height(header_b->height - CHAIN_RECALC_INTERVAL, hash_buffer_1);
-        header_a = m_io_load_block(hash_buffer_1);
+        io_load_block_header(hash_buffer_1, &header_a);
         
-        uint32_t diff = header_b->time - header_a->time;
+        uint32_t diff = header_b->time - header_a.time;
         // upper bound (4x)
         if (diff > SECONDS_IN_8_WEEKS)
             diff = SECONDS_IN_8_WEEKS;
@@ -155,7 +155,6 @@ uint8_t chain_compute_next_target(block_header_t *header_b, uint8_t *next_target
         big_div(bignum3, 2, bignum1);
         
         btarget_to_target(bignum1, next_target);  // Return value copied here
-        free(header_a);
     }
     
     free(hash_buffer_1);
