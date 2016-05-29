@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+
+import socket
+import sys
+
+ADDR = "localhost"
+PORT = 64720
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+sock.connect((ADDR, PORT))
+sock.sendall(b'\xde\xad\xbe\xef')
+# Receive data from the server and shut down
+sock.close()
+
