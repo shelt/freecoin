@@ -23,10 +23,9 @@ Head which is no longer on top.
 * No? Check if the block can be appended to any current head (and that head fast forwarded). 
 * No? Create a new head that points to the new block.
 * Perform a "chain clean":
-  * Check for "dead heads"; for each head `H`, move backwards from `H` and delete any heads *directly* pointing to blocks in the range `height(H)` down to `height(lowest_head_height)`.  b
-  * Check for "stale heads"; delete each head with a distance of 6 or more from the highest head.
+  * Check for "dead heads"; for each head `H`, traverse backwards from it as far as possible, and delete any heads which directly point to blocks which are already indirectly pointed to by `H`
+  * For each non-fully-chained head, check if it is now fully chained and update it accordingly.
+  * For each fully chained head, traverse backwards and delete any blocks which are not **chain valid**.
+  * For each fully-chained head, check if it is no longer fully changed and update it accordingly.
+  * Check for "stale heads"; delete each head with a distance of 6 or more from the highest chained head.
   * Delete all blocks not referenced by heads.
-  * For each non-fully-chained head `H`, check if it is now fully chained and update it accordingly.
-  * For each fully chained head `H`, ensure each block all the way down is **chain valid**.
-    * If one isn't, store it's `prev_hash` block as `P`, remove it and all blocks and heads above it. Continue checking each block starting with `P`.
-    * If we find another invalid block, repeat the last step on it, g enerating a new `P`. If we don't, and `P` isn't referenced by another full chain, create a new head pointing to `P`.
