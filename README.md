@@ -83,7 +83,7 @@ With banks that deal with regular currencies, all regulation happens in one plac
 | Name | alert |
 | ---- | ---- |
 | Value    | 8  |
-| Size     | `1B + 1B + 4B + 128B + 1B + [<=255B] (ALERTTYPE + command + time + sig{ALERTTYPE+time+msg}) +  msg_len + msg`  |
+| Size     | `1B + 1B + 4B + 128B + 1B + [<=255B] (ALERTTYPE + command + time + sig{ALERTTYPE+cmd+time+msg} +  msg_len + msg`)  |
 | Purpose  | Notify entire network about network emergency. Only valid if signed by key at key.shelt.ca.  int |
 | Content  | Information about the network issue. Depending on ALERTTYPE, the implementation may need to take action (such as not allowing mining).  |
 
