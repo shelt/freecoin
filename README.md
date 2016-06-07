@@ -12,436 +12,168 @@ A cryptocurrency is a currency that is functionally possible because of cryptogr
 
 With banks that deal with regular currencies, all regulation happens in one place. Storing the amount of money each person has along with the processing of transactions all happens on a few servers. Though they probably take backups and security very seriously, banks (and the governments that regulate them) represent a central authority over a vastly powerful resource. With decentralized currencies, transactions are processed and balances are stored by the people. Everyone agrees on how things should work, so it works.
 
-## Protocol specification
-#####Revision 4.1 - 5/4/16
+## Protocol
+#####Revision 5.0 - 6/4/16
+All **freecoin** communication is done over TCP. Because data must be able to permeate the network quickly, most functions are designed with the purpose of data request and exchange.
 
-> **NOTE**: *As of 5.4.16, networking is currently being overhauled.*
+### Header
+All messages have the following 7B header.
 
-> Freecoin uses a session-layer protocol that enables peer-to-peer communication. It is intended to be used specifically for freecoin. 
->
-> The freecoin protocol requires a reliable underlying transport layer protocol. This is due to the nature of the exchanged data; info must be able to permeate the network quickly.
+    [4][2][1]
+    [body_len][version][CTYPE]
 
-### Message content types
-> All messages have a 5 byte header specifying their length without the header (2 bytes), their protocol version (2 bytes) and their content type (1 byte).
+### Content types (CTYPE\_\*)
 
-| Name     | reject |
-| ----     | ----   |
-| Value    | 0      |
-| Size     | `1B + 1B + [<=255B] (ERRORTYPE + info_size + info)`  |
-| Purpose  | Tell a peer that a block/tx/time/alert/version is invalid. Sent in response to various messages.  |
-| Content  | ERRORTYPE byte and info about what specifically is invalid.    |
+    0 <reject>
+    [1][1][<=255]
+    [ETYPE][info_size][info]
+    Sent in response to invalid data.
+    
+    1 <gethighest>
+    []
+    Requests an inv of a peer's highest chained block.
+    
+    2 <getchain>
+    [32][1]
+    [start_block][count]
+    Requests an inv of the [count] blocks that proceed [start_block].
+    
+    3 <gettxs>
+    []
+    Requests an inv of all orphan transactions a peer knows about.
 
-| Name | getblocks |
-| ---- | ---- |
-| Value    | 1  |
-| Size     | `32B + 1B (start_block + block_count)`  |
-| Purpose  | Request an inv containing start_block and (block_count-1) blocks following it (up to 255). Used to update blockchain from a block onward. Sent unsolicited.  |
-| Content  | A block hash and a block count.  |
+    4 <getpeers>
+    []
+    Requests all of a peer's peers.
+    
+    5 <inv>
+    [1][1][count*32]
+    [DTYPE][count][hashes..]
+    Informs a peer about the existence of data.
+    Should only include *orphan* transactions and *chain-valid* blocks.
+    
+    6 <getdata>
+    [1][1][count*32..]
+    [DTYPE][count][hashes..]
+    Requests blocks or transactions.
 
-| Name | mempool |
-| ---- | ---- |
-| Value    | 2  |
-| Size     | `0B`  |
-| Purpose  | Request an inv containing peer's mempool txs. Alternatively named `gettxs` to fit in with `getnodes` and `getblocks`. Sent unsolicited.  |
-| Content  | N/A  |
+    7 <block>
+    [?]
+    A block. Should only be sent when solicited by getdata.
+    
+    8 <tx>
+    [?]
+    A full transaction. Should only be sent when solicited by getdata.
 
-| Name | inv |
-| ---- | ---- |
-| Value    | 3  |
-| Size     | `1B + 1B + ?*32B (DATATYPE + data_ids_count + data_ids[])`  |
-| Purpose  | Tell a peer about blocks or txs that you have. Sent unsolicited or in response to getblocks or mempool.  |
-| Content  | List of tx or block hashes that you have in your mempool or blockchain, respectively; or list of peers you are connected to.  |
+    9 <peer>
+    [1][1][addr_len]
+    [port][addr_len][addr]
+    Information about a peer.
 
-| Name | getdata |
-| ---- | ---- |
-| Value    | 4  |
-| Size     | `1B + 1B + ?*32B (DATATYPE + data_ids_count + data_ids[])`  |
-| Purpose  | Request full block(s)/tx(s) or all of a peer's peers. Sent unsolicited, often in response to an inv (for the former cases).  |
-| Content  | DATATYPE byte and identifying hash(es).  |
+    10 <alert>
+    [1][48]([1][4][msg_len])
+    [msg_len][sig]([ATYPE][time][msg])
+    Notifies peer about network emergency. Only valid if signed by admin_key.
+    
+    11 <ping>
+    []
+    Requests that a peer respond with a <pong>.
 
-| Name | block |
-| ---- | ---- |
-| Value    | 5  |
-| Size     | `4B + [varies] (size + block)`  |
-| Purpose  | Send a full block to a peer. Solicited by getdata.  |
-| Content  | A full block.  |
+    12 <pong>
+    []
+    Solicited by <ping>.
 
-| Name | tx |
-| ---- | ---- |
-| Value    | 6  |
-| Size     | `4B + [varies] (size + tx)`  |
-| Purpose  | Send a full transaction to a peer. Solicited by getdata.  |
-| Content  | A full transaction.  |
-
-| Name | peer |
-| ---- | ---- |
-| Value    | 7  |
-| Size     | `2B + 2B + [varies] (port + addrlen + addr)`  |
-| Purpose  | Send a full transaction to a peer. Solicited by getdata.  |
-| Content  | A full transaction.  |
-
-| Name | alert |
-| ---- | ---- |
-| Value    | 8  |
-| Size     | `1B + 128B + 1B + 1B + 4B + [<=255B] (msg_len + sig{ALERTTYPE+cmd+time+msg} + ALERTTYPE + cmd + time + msg`)  |
-| Purpose  | Notify entire network about network emergency. Only valid if signed by key at key.shelt.ca.  int |
-| Content  | Information about the network issue. Depending on ALERTTYPE, the implementation may need to take action (such as not allowing mining).  |
-
-| Name | ping |
-| ---- | ---- |
-| Value    | 9  |
-| Size     | `0B`  |
-| Purpose  | Verify connectivity of peer. Sent unsolicited.  |
-| Content  | N/A  |
-
-| Name | pong |
-| ---- | ---- |
-| Value    | `10 ` |
-| Size     | 0B  |
-| Purpose  | Verify connectivity of self to peer. Solicited by ping. |
-| Content  | N/A  |
-
-### Errors
-
-See the `<reject>` message specification for full size of error messages.
-
-#### Block-related
-
-| Name | `BLOCK_CONFLICT` |
-| ---- | ---- |
-| Value    | 4 |
-| Size     | `32B` |
-| Meaning  | Block's `prev_hash` is already in another block.  |
-| Content  | Offending block's hash.  |
-
-| Name | `BLOCK_BAD_TIME` |
-| ---- | ---- |
-| Value    | 5 |
-| Size     | `32B` |
-| Meaning  | Block's time is before last block.  |
-| Content  | Offending block's hash.  |
-
-| Name | `BLOCK_BAD_ROOT` |
-| ---- | ---- |
-| Value    | 6 |
-| Size     | `32B` |
-| Meaning  | Block's `merkle_root` does not match body.  |
-| Content  | Offending block's hash.  |
-
-| Name | `BLOCK_BAD_TARGET` |
-| ---- | ---- |
-| Value    | 7 |
-| Size     | `32B` |
-| Meaning  | Block's target is not correct.  |
-| Content  | Offending block's hash.  |
-
-| Name | `BLOCK_BAD_HASH` |
-| ---- | ---- |
-| Value    | 8 |
-| Size     | `32B` |
-| Meaning  | Block's hash isn't valid as per the target.  |
-| Content  | Offending block's hash.  |
-
-| Name | `BLOCK_BAD_BODY` |
-| ---- | ---- |
-| Value    | 9 |
-| Size     | `32B` |
-| Meaning  | Transaction(s) in body are invalid. No tx-specific reject messages are needed because the offender shouldn't have send such a block anyway.  |
-| Content  | Offending block's hash.  |
-
-| Name | `BLOCK_OVERFLOW` |
-| ---- | ---- |
-| Value    | 10 |
-| Size     | `32B` |
-| Meaning  | Block is larger than 1 MB.  |
-| Content  | Offending block's hash.  |
-
-| Name | `BLOCK_EXISTS` |
-| ---- | ---- |
-| Value    | 11 |
-| Size     | `32B` |
-| Meaning  | Block already exists in the blockchain.  |
-| Content  | Offending block's hash.  |
-
-#### Transaction-related
-
-| Name | unused |
-| ---- | ---- |
-| Value    | 12 |
-| Size     |  |
-| Meaning  |  |
-| Content  |  |
-
-| Name | `TX_BAD_SIG` |
-| ---- | ---- |
-| Value    | 13 |
-| Size     | `32B` |
-| Meaning  | Transaction input signature is invalid.  |
-| Content  | Offending transaction's hash.  |
-
-| Name | `TX_BAD_REF` |
-| ---- | ---- |
-| Value    | 14 |
-| Size     | `32B` |
-| Meaning  | A transaction input is already used or nonexistant. |
-| Content  | Offending transaction's hash.  |
-
-| Name | `TX_REF_OVERSPEND` |
-| ---- | ---- |
-| Value    | 15 |
-| Size     | `32B` |
-| Meaning  | A transaction's inputs are smaller than outputs.  |
-| Content  | Offending transaction's hash  |
-
-#### Generic
-
-| Name | `BAD_VERSION` |
-| ---- | ---- |
-| Value    | 1 |
-| Size     | `0B` |
-| Meaning  | Incompatible version.  |
-| Content  | *N/A* |
-
-| Name | `MESSAGE_MALFORMED` |
-| ---- | ---- |
-| Value    | 2 |
-| Size     | `0B` |
-| Meaning  | Data within the message was not parsed according to specification. |
-| Content  | *N/A* |
-
-| Name | `UNKNOWN_CTYPE` |
-| ---- | ---- |
-| Value    | 3 |
-| Size     | `0B` |
-| Meaning  | First byte represents an unknown protocol CTYPE.  |
-| Content  | *N/A*  |
-
-
-### DATATYPES
-> (used for inv and getdata)
-
+### Error types (ETYPE\_\*)
+    1 bad_version
+    2 message_malformed
+    3 bad_ctype
+    4 bad_dtype
+    5 bad_atype
+    
+### Data types (DTYPE\_\*)
     0 blocks
     1 transactions
     2 peers
+    
+### Alert command types (ATYPE\_\*)
+    0 warnuser
+    1 forceupdate
+    
+### General procedures
+Note: See the source for info on handling received messages.
 
+#### General
+In order for the network to remain functional, all clients must abide by the following three rules: 
 
+* Stay as informed as possible
+* Keep others as informed as you are
+* Strive to have the highest possible chain.
 
-### Network procedures
+#### Joining the network
+* Try connecting to known nodes until one works. This is peer<sub>0</sub> .
 
-The following are standards for accomplishing network tasks. This is how they are implemented in the *freecoin* source. Some things to note:
+* For `(0 <= n < 8)`:
 
-* Networking is designed in such a way that all sending and Receiving can happen concurrently and independently of one another. For instance, a function which sends a `<getblocks>` doesn't wait for some `<block>` messages; it simply returns to its caller which in turn waits for some blocks to show up.
-
-* **mempool**: A place where un-added transactions are stored
-* **limbo**: A place where non-blockchain (Received) blocks are stored until they can be added
-
-ANY TIME BLOCKS ARE ADDED TO CHAIN: remove any transactions that are in them from the mempool. 
-
-The underlying goal of each client that keeps the network working is: we always want to have the highest block height possible. Therefore, we also want to know about every block we can.
-
-#### Joining the network (theoretical)
-- Try connecting to known nodes until one works. This is peer<sub>0</sub> .
-
-For `(0 <= n < 8)`:
-
-- Ask peer<sub>n</sub> what peers they are connected to. Select a node randomly from this pool (excluding ourself,  peer<sub>[0,n-1]</sub> and any nodes we've failed to connect to). This is peer<sub>n+1</sub>.
-- If peer<sub>n</sub> for `n>0` has less than 8 peers, send them a list of all our peers.
-- If peer<sub>n</sub> for `n>0` has no nodes that are valid to us (according to above exclusions), select another node from the same pool we selected peer<sub>n</sub> from.
-
-#### Joining the network (programatically):
-- Send a connected server a `<getnodes>`. We will Receive an `<inv>` of peers (handled seperately, see **Receiving an `<inv>` (peers)**)
-- Wait 15 seconds and for peercount to reach 4 (normally) or 1 (testnet).
-
-#### Receiving a `<reject>`
-- Display details of error to user.
-
-#### Receiving a `<getnodes>`
-TODO noexist
-
-#### Receiving a `<getblocks>`
-- If we have the specified `start_block` in our blockchain
-  - Reply with as many `<block>`s as we can between (1-255) and (1-`block_count`) (not inclusive of `start_block`)
-
-#### Receiving a `<mempool>`
-- If we have at least 1 transaction in our mempool:
-  - reply with as many `<tx>`s as we can (1-255).
-
-#### Receiving an `<inv>` (blocks)
-- For each block hash:
-  - If we don't have the block hash in our blockchain or limbo:
-    - reply with a `<getdata>` for the block.
-
-#### Receiving an `<inv>` (transactions)
-- For each transaction hash:
-  - If we don't have the transaction hash in our mempool:
-    - Reply with a `<getdata>` for the transaction.
-
-#### Receiving a `<getdata>` (blocks)
-- For each requested block
-  - If we have the block in limbo or our blockchain:
-    - Reply with the correct `<block>`
-
-#### Receiving a `<getdata>` (txs)
-- For each requested tx:
-  - If we have the tx in our mempool:
-    - Reply with the correct `<tx>`
-
-#### Receiving a `<getdata>` (peers)
-- If we are connected to at least 1 peer:
-  - Reply with a `<peer>` of all connected peers
-
-#### Receiving a `<block>`
-- If the block height compared to our blockchain height is:
-  - **Less than or equal to, or 2 or more greater than:**
-    - Save the block to limbo.
-  - **1 greater than:**
-    - If the `prev_blockhash` is the different from the latest block in our chain:
-      - Save the block to limbo.
-    - Otherwise:
-        -check if this block is valid. If it isn't:
-          - Drop and block the peer that sent it.
-        - Otherwise:
-          - Add this block to our blockchain.
-          - Tell our peers about this block in an `<inv>`
-- For each block in limbo with a height greater than our current blockchain height, in order from greatest difference to smallest:
-  - If that block can be traced back (through `prev_hash`s) to a block in our blockchain:
-    - If each block in that limbo chain is valid:
-      - Swap the limbo chain with our current blockchain at the point of similarity (this is called a **revert**). The unused blocks should now be in limbo.
-      - Send all our peers an `<inv>` containing the newly added chain.
-      - *[break loop]*
-    - Otherwise:
-      - drop and block the peer that sent it. Optionally, send a error-specific `<reject>` message.
-  - Otherwise:
-    - Send a `<getblock>` for the referenced yet missing block.
-    - *[continue loop]*
-
-#### Receiving a `<tx>`
-- If we don't have the transaction hash in our mempool:
-  - If the transaction is double-spending from the mempool or the blockchain
-  - If the transaction is valid
-
-#### Receiving a `<peer>`
-- Save the peers (excluding ourselves and ones we already have) to file
-- If we are connected to less than 8 peers:
-  - TODO
-
-#### Receiving an `<alert>`
-- TODO
-
-#### Receiving a `<ping>`
-- Reply with `<pong>`
-
-#### Receiving a `<pong>`
-- Inform user
-
-
-
-
-
-### Misc procedures
+  * Ask peer<sub>n</sub> what peers they are connected to. Select a node randomly from this pool (excluding ourself,  peer<sub>[0,n-1]</sub> and any nodes we've failed to connect to). This is peer<sub>n+1</sub>.
+  * If peer<sub>n</sub> for `n>0` has less than 8 peers, send them a list of all our peers.
+  * If peer<sub>n</sub> for `n>0` has no nodes that are valid to us (according to above exclusions), select another node from the same pool we selected peer<sub>n</sub> from.
 
 #### Do periodically:
-- Send an `<inv>` of your latest block.
-- Send an `<inv>` of your peers.
+* Send all peers a `<gethighest>`.
+* If you have less than 8 peers, send each peer a `<getpeers>` until you do.
 
-#### Validating a block
-- Applying the SHA256 hash function to the block's header (first `SIZE_BLOCK_HEADER` bytes) must result in a value less than or equal to the expanded form of `target`.
-- `version` must match that of the current client.
-- `time` must be after that of the block corresponding to `prev_hash`.
-- `height` must be one more than that of the block corresponding to `prev_hash`.
-- `prev_hash` must correspond to a valid block (for blocks of `height` > 0).
-- `merkle_root` must be the merkle root of the transactions in the body, in order.
-- `target` must be the correct target in terms of the block corresponding to `prev_hash` and the block 2016 blocks ago.
-- The body of the block must contain `tx_count` transactions, all of which must be valid, with the following exception:
-  - The first transaction is allowed to be a coinbase transaction.
+### Validation
 
-#### Validating a coinbase transaction
-- `in_count` must be 0.
-- The **combined** output amount must be equal to or less than (MINING_REWARD + the **combined** output surplus from other transactions in the transaction's block).
+It's important to test the validity of data we receive. Although there are certain traits a block or transaction may have that make them blatanly invalid, there are certain types of validity that can't be tested for until we have a complete picture. To remedy this, there are two tiers of validity: **pseudo-valid** and **chain-valid**. Data can be confirmed to be **pseudo-valid** at first glance. However, it's only until we know about the entire chain of a block or the block of a transaction that we may deem data to be **chain-valid**.
 
-#### Validating a transaction (non-coinbase)
-- `in_count` must be greater than 1.
-- `version` must match that of the current client.
-- The the sum of the `amount`s corresponding to each input must be equal to or greater than the sum of this transaction's outputs' **combined** `amount`.
-- If the transaction is larger than 1000 bytes, this transaction's outputs' **combined** output surplus must be equal to or greater than `[transaction_size] * TX_FEE_PER_1K`.
-- The body of the transaction must consist of `in_count` inputs followed by `out_count` outputs, all of which must be valid.
+#### Block validation (pseudo)
+* sha256(block_header) <= `target` field
+* `version` field matches that of the current client
+* `merkle_root` must be merkle root of transactions in body, in order
+* The body must contain `tx_count` transactions, all of which must be **pseudo-valid**.
 
-#### Validating a transaction input
-- `ref_tx` must be in our blockchain. If not, this procedure should return `ERR_TX_BAD_REF`, which should be passed to the source of this transaction.
-- The `out_index`th output of the `ref_tx` must not be spent elsewhere in the chain.
-- The `out_index`th output of the `ref_tx` must have an `out_address` which is a valid address of `pubkey`.
-- `sig` must be a valid RSA signature of (`ref_tx` .. `out_index`).
-- The current time (or the time of the block) must be equal to or greater than `lock_time`.
-#### Validating a transaction output
-*An output can contain any data because it is limited by the fee and amount rules of transaction validation.*
+#### Block validation (chain)
+* if `height` == 0:
+  * Block hash must be equal to `ONE_TRUE_ROOT`
+* elif `height` > 0:
+  * `time` field > `time` field of previous block
+  * `height`height` field == 1 + `height` of previous block
+  * If `height` < `CHAIN_RECALC_INTERVAL`:
+    * `target` must be equal to the previous block's `target`
+  * else:
+    * `target` must be correct in terms of the previous block and the block `CHAIN_RECALC_INTERVAL` blocks prior to it
+* The body's transactions must all be **chain-valid**.
 
-#### Submitting a transaction
-- Send all peers an `<inv>` containing new transaction's hash
+#### Transaction validation (pseudo)
+* `version` field matches that of the current client
+* If [transaction_size] > 1000 bytes, this transaction's outputs' combined output surplus must be >= [transaction_size] * `TX_FEE_PER_1K`
+* The body must contain `in_count` `tx_input`s and `out_count` `tx_outputs`. All inputs must be **pseudo-valid**.
 
-#### Upon finding a valid block
-TODO
+#### Transaction validation (chain)
+* If this is the first transaction in the block and (`in_count` == 0) (coinbase transaction):
+  * The combined output amount <= (`MINING_REWARD` + the combined `tx_output` surplus from other transactions in the transaction's block).
+* Else:
+  * `in_count` > 0
+  * The the sum of the `amount`s corresponding to each `tx_input` must be >= than the sum of the `amount`s corresponding to each `tx_output`.
+  * The body's inputs must all be **chain-valid**.
 
+#### Transaction input validation (pseudo)
+* The `sig` field must contain a signature (corresponding to the `pubkey`) of the sha256 of the input's transaction, minus the parts where the signatures would go.
 
-
+#### Transaction input validation (chain)
+* The `out_index`th output of the `ref_tx` must not have been spent in this block or one prior (within the same chain).
 
 
 ## Source information
 
-
 ## Source guidelines
-* `size_t` should be used when dealing with array sizes UNLESS it is measuring lengths of serialized data (where such a number would need to fit in the specified range).
-* Memory allocation (i.e., blocks) for a function's output is always done via implementation. Pointers to the pre-allocated memory block are passed into the function (typically as the last parameter).
-* Only include things in the header file when the header file itself needs them.
-* Functions which use/modify a type or form of data (block, tx) should be prefixed as such: `block_init()` or `tx_get_size()`
-* The following are "reserved" prefixes used in identifiers:
-| Prefix | Meaning |
-| ---- | ---- |
-| `ffind_`   | Store information into provided memory which is stored in file(s) |
-| `{type}_`  | Performs some `{type}`-specific operation, where `{type}` is a struct or structured block of memory.  |
-
 
 ## Todo
 
-### NOTICE
-> Remember to disable switching back to big endian after sha256. It's a wasteful operation, and we already want it in little endian because that's what our compare function uses. Alternatively, modify the compare function.
-
 ### Routine
-* Unix philosophy: Do one thing and do it well
-* Dynamic programming principles
-* Commits should coorespond to checks off the burndown
-* Find memory leaks by grepping for "m_" and "malloc"
-* Check:
-  * for failure of fopen() and *alloc()
-  * that conversions to primitive types are in host byte order
-
-### Burndown
-* ~~Tx structs~~
-* ~~Tx (de)serializing~~
-* ~~Block structs~~
-* ~~Block (de)serializing~~
-* IO
-  * ~~Tx storage~~
-  * ~~Block storage~~
-  * ~~Functions to add and remove from chain index~~
-  * ~~Function to check if a block is in the chain (ie or in limbo)~~
-* ~~Safe wrapper for IO and such~~
-* Networking (current)
-* Validation: Txs and Blocks
-  * Target validation: second byte is `<32`
-* Mining binay
-* Other binaries
-* UI
-  * Command line options
-  * fprint_tx()
-  * fprint_block()
-
 
 ### Far future
-* Config file
-
 
 ### Misc
-* Make networking ipv6-friendly
-* Clean up header files
-* The first 64B chunk of every hash need not be calculated on each iteration.
-* make all functions that copy data to a ptr also return the ptr
+* ipv6
+* fast_mine: C API, and the first 64B chunk of every hash need not be calculated on each iteration.
